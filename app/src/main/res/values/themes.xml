@@ -2,4 +2,41 @@
 <resources>
 
     <style name="Theme.RegistrationUI" parent="android:Theme.Material.Light.NoActionBar" />
+
+
+   <!-- &lt;!&ndash; Custom style for DatePickerDialog &ndash;&gt;
+    <style name="CustomDatePickerDialog" parent="android:Theme.Material.Light.Dialog">
+        <item name="android:datePickerStyle">@style/CustomDatePickerStyle</item>
+
+
+
+    </style>
+
+    &lt;!&ndash; Custom style for DatePicker &ndash;&gt;
+    <style name="CustomDatePickerStyle" parent="android:Widget.Material.DatePicker">
+        &lt;!&ndash; Customize the color attributes here &ndash;&gt;
+        <item name="android:headerBackground">#FF014C8F</item>
+        <item name="android:colorAccent">#FF014C8F</item>
+        <item name="android:textColor">#FF014C8F</item>
+        <item name="android:textAppearance">@color/white</item>
+        <item name="android:headerMonthTextAppearance">@color/white</item>
+        <item name="android:headerDayOfMonthTextAppearance">@color/white</item>
+        <item name="android:headerYearTextAppearance">@color/white</item>
+    </style>
+
+-->
+
+    <!-- Custom style for DatePickerDialog -->
+    <style name="CustomDatePickerDialog" parent="android:Theme.Material.Light.Dialog">
+        <item name="android:datePickerStyle">@style/CustomDatePickerStyle</item>
+        <item name="android:colorAccent">#FF014C8F</item>
+
+    </style>
+
+    <!-- Custom style for DatePicker -->
+    <style name="CustomDatePickerStyle" parent="android:Widget.Material.DatePicker">
+        <!-- Customize the color attributes here -->
+        <item name="android:headerBackground">#FF014C8F</item>
+
+    </style>
 </resources>

@@ -3,6 +3,7 @@ import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,11 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -41,21 +45,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.registrationui.R
+import java.text.SimpleDateFormat
 import java.util.Calendar
-
+import java.util.Locale
+import java.util.*
 
 
 @Composable
 fun SignupScreen(navController: NavHostController){
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.White), verticalArrangement =Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.White), verticalArrangement =Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
         TopBar(onBackClick = { navController.popBackStack()})
         CustomSwipeButton()
         //TermsSection()
@@ -109,7 +119,8 @@ fun CustomSwipeButton() {
                         .weight(1f)
                         .height(53.dp)
                         .padding(16.dp)
-                        .clickable { selectedButton = 1 },
+                        .clickable (interactionSource = remember { MutableInteractionSource() },
+                            indication = null,){ selectedButton = 1 },
                     fontSize = 16.sp,
                     color = Color.Black,
                     textAlign = TextAlign.Center
@@ -144,7 +155,8 @@ fun CustomSwipeButton() {
                         .weight(1f)
                         .height(53.dp)
                         .padding(16.dp)
-                        .clickable { selectedButton = 2 },
+                        .clickable (interactionSource = remember { MutableInteractionSource() },
+                            indication = null,){ selectedButton = 2 },
                     fontSize = 16.sp,
                     color = Color.Black,
                     textAlign = TextAlign.Center
@@ -294,7 +306,8 @@ fun UserTextFields(selectedButton: Int){
                 focusedLabelColor = Color(0xFF014C8F),   // Focused label color
                 unfocusedLabelColor = Color.Gray
             ),)*/
-        DateOfBirthField()
+        //DateOfBirthField()
+        DatePickerTextField()
 
         Spacer(modifier = Modifier.height(15.dp))
 
@@ -330,7 +343,7 @@ fun TermsSection() {
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier.padding(10.dp)
     ) {
         Checkbox(
             checked = isChecked,
@@ -371,10 +384,11 @@ fun nextBtn(){
         ),
         modifier = Modifier
             .height(53.dp)
-            .width(350.dp) // Set a fixed height
+            .width(300.dp) // Set a fixed height
     ) {
         Text(modifier = Modifier.padding(5.dp), text = "Next", fontSize = 20.sp)
     }
+    Spacer(modifier = Modifier.height(20.dp))
 }
 
 
@@ -408,6 +422,7 @@ fun nextBtn(){
             trailingIcon = {
                 IconButton(onClick = { datePickerDialog.show() }) {
                     Icon(
+                        tint = Color(0xFF014C8F),
                         painter = painterResource(id = R.drawable.baseline_calendar_month_24), // Replace with your calendar icon resource
                         contentDescription = "Calendar Icon"
                     )
@@ -426,7 +441,119 @@ fun nextBtn(){
 
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerTextField( modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
 
+    var selectedDate by remember { mutableStateOf(TextFieldValue("")) }
+    var showDialog by remember { mutableStateOf(false) }
+    val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
+
+
+    val datePickerDialog = DatePickerDialog(context,R.style.CustomDatePickerDialog,{ _, selectedYear, selectedMonth, selectedDay ->
+        calendar.set(selectedYear, selectedMonth, selectedDay)
+        val formattedDate = dateFormat.format(calendar.time)
+        selectedDate = TextFieldValue(formattedDate, TextRange(formattedDate.length))
+        focusManager.clearFocus() // Clear focus after date is set
+    }, year, month, day)
+
+    datePickerDialog.setOnCancelListener {
+        // Handle cancellation here
+        showDialog = false // Dismiss the dialog
+    }
+
+    datePickerDialog.setOnDateSetListener { _, selectedYear, selectedMonth, selectedDay ->
+        calendar.set(selectedYear, selectedMonth, selectedDay)
+        val formattedDate = dateFormat.format(calendar.time)
+        selectedDate = TextFieldValue(formattedDate, TextRange(formattedDate.length))
+        showDialog = false // Dismiss the dialog after setting the date
+        focusManager.clearFocus() // Clear focus after date is set
+    }
+
+    if (showDialog) {
+        datePickerDialog.show()
+    }
+
+
+
+
+
+    fun formatInput(input: String, cursorPosition: Int): Pair<String, Int> {
+        val digitsOnly = input.filter { it.isDigit() }.take(8) // Limit to 8 digits
+        val formatted = StringBuilder()
+        var newCursorPosition = cursorPosition
+        var day = ""
+        var month = ""
+
+        for (i in digitsOnly.indices) {
+            if (i == 2 || i == 4) {
+                formatted.append('/')
+                if (cursorPosition > i) {
+                    newCursorPosition++
+                }
+            }
+            formatted.append(digitsOnly[i])
+
+            // Extract day and month values while formatting
+            if (i < 2) {
+                day += digitsOnly[i]
+            } else if (i >= 2 && i < 4) {
+                month += digitsOnly[i]
+            }
+        }
+
+        // Validate day and month
+        if (day.isNotEmpty() && (day.toInt() < 1 || day.toInt() > 31)) {
+            return "" to 0 // Reset the input
+        }
+        if (month.isNotEmpty() && (month.toInt() < 1 || month.toInt() > 12)) {
+            return "" to 0 // Reset the input
+        }
+
+        return formatted.toString() to newCursorPosition.coerceAtMost(formatted.length)
+    }
+    OutlinedTextField(
+        value = selectedDate,
+        onValueChange = { newValue ->
+            val (formattedText, newCursorPosition) = formatInput(newValue.text, newValue.selection.start)
+            selectedDate = TextFieldValue(formattedText, TextRange(newCursorPosition))
+        },
+        label = { Text(text = "Enter your Date of Birth") },
+        readOnly = false,
+        trailingIcon = {
+            Icon(
+                tint = Color(0xFF014C8F),
+                imageVector = Icons.Default.DateRange,
+                contentDescription = null,
+                modifier = Modifier.clickable {
+                    focusManager.clearFocus() // Clear focus before showing dialog
+                    showDialog = true
+                }
+            )
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(0xFF014C8F),
+            unfocusedBorderColor = Color.Gray, // Optional: define the unfocused border color
+            cursorColor = Color(0xFF014C8F),         // Cursor color
+            focusedLabelColor = Color(0xFF014C8F),   // Focused label color
+            unfocusedLabelColor = Color.Gray
+        ),
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
+            .clickable {
+                focusManager.clearFocus() // Clear focus before showing dialog
+                showDialog = true
+            }
+    )
+}
 
 
 /*@Composable

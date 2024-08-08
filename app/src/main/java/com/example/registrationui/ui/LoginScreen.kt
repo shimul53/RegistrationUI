@@ -220,7 +220,7 @@ fun SignupSection(navController: NavHostController) {
         )
 
         TextButton(
-            onClick = { navController.navigate("signup")},
+            onClick = { navController.navigate("intro")},
             colors = ButtonDefaults.textButtonColors(
                 contentColor = Color(0xFFF8AD3C) // Set the text button color
             )
