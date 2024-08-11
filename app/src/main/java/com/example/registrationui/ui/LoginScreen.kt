@@ -89,11 +89,12 @@ fun LoginScreen(navController: NavHostController){
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp),value =textState.value , onValueChange = {textState.value = it},
 
-            label ={ Text(text = "User ID")} ,
+            placeholder ={ Text(text = "User ID")} ,
+            singleLine = true,
 
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF014C8F),
-                unfocusedBorderColor = Color.Gray, // Optional: define the unfocused border color
+                unfocusedBorderColor = Color(0x54545454), // Optional: define the unfocused border color
                 cursorColor = Color(0xFF014C8F),         // Cursor color
                 focusedLabelColor = Color(0xFF014C8F),   // Focused label color
                 unfocusedLabelColor = Color.Gray
@@ -135,12 +136,13 @@ fun PasswordOutlinedTextField() {
     var password by remember { mutableStateOf("") }
 
     OutlinedTextField(
+        singleLine = true,
         value = password,
         onValueChange = { newPassword -> password = newPassword },
-        label = { Text(text = "Password") },
+        placeholder = { Text(text = "Password") },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color(0xFF014C8F),
-            unfocusedBorderColor = Color.Gray, // Optional: define the unfocused border color
+            unfocusedBorderColor = Color(0x54545454), // Optional: define the unfocused border color
             cursorColor = Color(0xFF014C8F),         // Cursor color
             focusedLabelColor = Color(0xFF014C8F),   // Focused label color
             unfocusedLabelColor = Color.Gray

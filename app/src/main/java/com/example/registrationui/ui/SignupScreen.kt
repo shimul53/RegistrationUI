@@ -2,15 +2,19 @@ package UI
 import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -20,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,16 +35,21 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,24 +64,60 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.registrationui.R
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.*
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(navController: NavHostController){
+    val scope = rememberCoroutineScope()
+    Scaffold (containerColor = Color.White,
+        modifier = Modifier.navigationBarsPadding().fillMaxSize().imePadding(),
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarColors( containerColor = Color.White, actionIconContentColor = Color.Black, navigationIconContentColor = Color.Black, scrolledContainerColor = Color.Black, titleContentColor = Color.Black ),
+                title = {
+                    androidx.compose.material.Text(
+                        "Sign Up",
+                        color = Color.Black,
+                        fontSize = 16.sp
+                    )
+                },
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(Color.White), verticalArrangement =Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
-        TopBar(onBackClick = { navController.popBackStack()})
-        CustomSwipeButton()
-        //TermsSection()
-       // nextBtn()
+                navigationIcon = {
+                    IconButton(onClick = { scope.launch {
 
+                        navController.popBackStack()
+
+                        // navController.navigate("anotherScreen")
+
+                    } }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }){
+        paddingValues ->
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(paddingValues)
+            .imePadding()
+            .background(Color.White), verticalArrangement =Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
+            //TopBar(onBackClick = { navController.popBackStack()})
+            CustomSwipeButton()
+            //TermsSection()
+            // nextBtn()
+
+        }
     }
+
+
+
 }
 
 @Composable
@@ -119,8 +165,10 @@ fun CustomSwipeButton() {
                         .weight(1f)
                         .height(53.dp)
                         .padding(16.dp)
-                        .clickable (interactionSource = remember { MutableInteractionSource() },
-                            indication = null,){ selectedButton = 1 },
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                        ) { selectedButton = 1 },
                     fontSize = 16.sp,
                     color = Color.Black,
                     textAlign = TextAlign.Center
@@ -155,8 +203,10 @@ fun CustomSwipeButton() {
                         .weight(1f)
                         .height(53.dp)
                         .padding(16.dp)
-                        .clickable (interactionSource = remember { MutableInteractionSource() },
-                            indication = null,){ selectedButton = 2 },
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                        ) { selectedButton = 2 },
                     fontSize = 16.sp,
                     color = Color.Black,
                     textAlign = TextAlign.Center
@@ -216,23 +266,26 @@ fun UserTextFields(selectedButton: Int){
     val accountNameState = remember { mutableStateOf("") }
     val mobileNumberState = remember { mutableStateOf("") }
     val nidNoState = remember { mutableStateOf("") }
-    Column(modifier = Modifier
-        .verticalScroll(scrollState), verticalArrangement =Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = Modifier.padding(bottom = 20.dp)
+        , verticalArrangement =Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
 
         //user id
         Text(text = "User ID", modifier = Modifier
             .align(Alignment.Start)
             .padding(start = 16.dp))
-        OutlinedTextField( modifier = Modifier
+        OutlinedTextField(
+            modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp),value =userIDState.value , onValueChange = {userIDState.value = it},
-            label ={ Text(text = "Enter your user ID")} ,
+            singleLine = true,
+            placeholder ={ Text(text = "Enter your user ID")} ,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF014C8F),
-                unfocusedBorderColor = Color.Gray, // Optional: define the unfocused border color
+                unfocusedBorderColor = Color(0x54545454), // Optional: define the unfocused border color
                 cursorColor = Color(0xFF014C8F),         // Cursor color
                 focusedLabelColor = Color(0xFF014C8F),   // Focused label color
-                unfocusedLabelColor = Color.Gray
+                unfocusedLabelColor = Color.Gray,
+                containerColor = Color(0xFBFBFBFB),
             ),)
         Spacer(modifier = Modifier.height(15.dp))
 
@@ -243,13 +296,15 @@ fun UserTextFields(selectedButton: Int){
         OutlinedTextField( modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp),value =accountNumberState.value , onValueChange = {accountNumberState.value = it},
-            label ={ Text(text = "Enter your Account Number")} ,
+            placeholder ={ Text(text = "Enter your Account Number")} ,
+            singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF014C8F),
-                unfocusedBorderColor = Color.Gray, // Optional: define the unfocused border color
+                unfocusedBorderColor = Color(0x54545454), // Optional: define the unfocused border color
                 cursorColor = Color(0xFF014C8F),         // Cursor color
                 focusedLabelColor = Color(0xFF014C8F),   // Focused label color
-                unfocusedLabelColor = Color.Gray
+                unfocusedLabelColor = Color.Gray ,
+                containerColor = Color(0xFBFBFBFB),
             ),)
 
         Spacer(modifier = Modifier.height(15.dp))
@@ -262,13 +317,15 @@ fun UserTextFields(selectedButton: Int){
         OutlinedTextField( modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp),value =accountNameState.value , onValueChange = {accountNameState.value = it},
-            label ={ Text(text = "Enter your Account Name")} ,
+            placeholder ={ Text(text = "Enter your Account Name")} ,
+            singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF014C8F),
-                unfocusedBorderColor = Color.Gray, // Optional: define the unfocused border color
+                unfocusedBorderColor = Color(0x54545454), // Optional: define the unfocused border color
                 cursorColor = Color(0xFF014C8F),         // Cursor color
                 focusedLabelColor = Color(0xFF014C8F),   // Focused label color
-                unfocusedLabelColor = Color.Gray
+                unfocusedLabelColor = Color.Gray,
+                containerColor = Color(0xFBFBFBFB),
             ),)
 
         Spacer(modifier = Modifier.height(15.dp))
@@ -280,13 +337,16 @@ fun UserTextFields(selectedButton: Int){
         OutlinedTextField( modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp),value =mobileNumberState.value , onValueChange = {mobileNumberState.value = it},
-            label ={ Text(text = "Enter your Mobile Number")} ,
+            placeholder ={ Text(text = "Enter your Mobile Number")} ,
+            singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF014C8F),
-                unfocusedBorderColor = Color.Gray, // Optional: define the unfocused border color
+                unfocusedBorderColor = Color(0x54545454), // Optional: define the unfocused border color
                 cursorColor = Color(0xFF014C8F),         // Cursor color
                 focusedLabelColor = Color(0xFF014C8F),   // Focused label color
-                unfocusedLabelColor = Color.Gray
+                unfocusedLabelColor = Color.Gray,
+                containerColor = Color(0xFBFBFBFB),
+
             ),)
 
         Spacer(modifier = Modifier.height(15.dp))
@@ -307,7 +367,7 @@ fun UserTextFields(selectedButton: Int){
                 unfocusedLabelColor = Color.Gray
             ),)*/
         //DateOfBirthField()
-        DatePickerTextField()
+        DatePickerText()
 
         Spacer(modifier = Modifier.height(15.dp))
 
@@ -317,14 +377,17 @@ fun UserTextFields(selectedButton: Int){
             .padding(start = 16.dp))
         OutlinedTextField( modifier = Modifier
             .fillMaxWidth()
+            .imePadding()
             .padding(start = 16.dp, end = 16.dp),value =nidNoState.value , onValueChange = {nidNoState.value = it},
-            label ={ Text(text = "Enter your NID No")} ,
+            placeholder ={ Text(text = "Enter your NID No")} ,
+            singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF014C8F),
-                unfocusedBorderColor = Color.Gray, // Optional: define the unfocused border color
+                unfocusedBorderColor = Color(0x54545454), // Optional: define the unfocused border color
                 cursorColor = Color(0xFF014C8F),         // Cursor color
                 focusedLabelColor = Color(0xFF014C8F),   // Focused label color
-                unfocusedLabelColor = Color.Gray
+                unfocusedLabelColor = Color.Gray,
+                containerColor = Color(0xFBFBFBFB),
             ),)
 
         TermsSection()
@@ -418,7 +481,7 @@ fun nextBtn(){
                 .padding(start = 16.dp, end = 16.dp),
             value = dateOfBirthState.value,
             onValueChange = { dateOfBirthState.value = it },
-            label = { Text(text = "Enter your Date of Birth") },
+            placeholder = { Text(text = "Enter your Date of Birth") },
             trailingIcon = {
                 IconButton(onClick = { datePickerDialog.show() }) {
                     Icon(
@@ -439,9 +502,69 @@ fun nextBtn(){
     }
 
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerText(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+    var selectedDate by remember { mutableStateOf("Enter your Date of Birth") }
+
+    // Function to show DatePickerDialog
+    fun showDatePickerDialog() {
+        DatePickerDialog(
+            context,R.style.CustomDatePickerDialog,
+            { _, selectedYear, selectedMonth, selectedDay ->
+                calendar.set(selectedYear, selectedMonth, selectedDay)
+                val formattedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
+                selectedDate = formattedDate
+                focusManager.clearFocus() // Clear focus after date is set
+            },
+            year, month, day
+        ).show()
+    }
+
+    Box(
+        contentAlignment = Alignment.CenterStart,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clickable {
+                showDatePickerDialog() // Show DatePickerDialog when the box is clicked
+            }
+            .background(Color(0xFBFBFBFB), shape = RoundedCornerShape(4.dp)) // Set corner radius
+            .border(1.dp, Color(0x54545454), shape = RoundedCornerShape(4.dp)) // Set border with corner radius
+            .padding(16.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = selectedDate,
+                color = if (selectedDate == "Enter your Date of Birth") Color.Black else Color.Black
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Icon(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = null,
+                tint = Color(0xFF014C8F),
+                modifier = Modifier.clickable {
+                    showDatePickerDialog() // Show DatePickerDialog when the icon is clicked
+                }
+            )
+        }
+    }
+}
+
+
+/*@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerTextField( modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -524,7 +647,8 @@ fun DatePickerTextField( modifier: Modifier = Modifier) {
             val (formattedText, newCursorPosition) = formatInput(newValue.text, newValue.selection.start)
             selectedDate = TextFieldValue(formattedText, TextRange(newCursorPosition))
         },
-        label = { Text(text = "Enter your Date of Birth") },
+        placeholder = { Text(text = "Enter your Date of Birth") },
+        singleLine = true,
         readOnly = false,
         trailingIcon = {
             Icon(
@@ -553,7 +677,7 @@ fun DatePickerTextField( modifier: Modifier = Modifier) {
                 showDialog = true
             }
     )
-}
+}*/
 
 
 /*@Composable
