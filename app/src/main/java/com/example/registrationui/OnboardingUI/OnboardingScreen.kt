@@ -104,7 +104,7 @@ fun IntroScreen(navController: NavController) {
                         AsyncImage(
                             model = list[currentPage].res,
                             contentDescription = null, modifier = Modifier
-                                .height(380.dp)
+                                .height(300.dp)
                                 .width(300.dp)
                         )
                         Text(

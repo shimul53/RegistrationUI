@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -58,11 +59,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.navArgument
 import com.example.registrationui.R
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -76,7 +79,10 @@ import java.util.*
 fun SignupScreen(navController: NavHostController){
     val scope = rememberCoroutineScope()
     Scaffold (containerColor = Color.White,
-        modifier = Modifier.navigationBarsPadding().fillMaxSize().imePadding(),
+        modifier = Modifier
+            .navigationBarsPadding()
+            .fillMaxSize()
+            .imePadding(),
         topBar = {
             TopAppBar(
                 colors = TopAppBarColors( containerColor = Color.White, actionIconContentColor = Color.Black, navigationIconContentColor = Color.Black, scrolledContainerColor = Color.Black, titleContentColor = Color.Black ),
@@ -109,7 +115,7 @@ fun SignupScreen(navController: NavHostController){
             .imePadding()
             .background(Color.White), verticalArrangement =Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
             //TopBar(onBackClick = { navController.popBackStack()})
-            CustomSwipeButton()
+            CustomSwipeButton(navController = navController)
             //TermsSection()
             // nextBtn()
 
@@ -121,7 +127,7 @@ fun SignupScreen(navController: NavHostController){
 }
 
 @Composable
-fun CustomSwipeButton() {
+fun CustomSwipeButton(navController: NavHostController) {
     // State to track which button is clicked
     var selectedButton by remember { mutableStateOf(1) }
     Card(
@@ -219,9 +225,9 @@ fun CustomSwipeButton() {
     }
     // Conditionally render RegularUserTextFields
     if (selectedButton == 1) {
-        UserTextFields(selectedButton = 1)
+        UserTextFields(navController = navController,selectedButton = 1)
     } else if (selectedButton == 2) {
-        UserTextFields(selectedButton = 2)
+        UserTextFields(navController = navController,selectedButton = 2)
     }
 
 
@@ -259,13 +265,14 @@ fun TopBar(onBackClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserTextFields(selectedButton: Int){
+fun UserTextFields(navController: NavHostController,selectedButton: Int){
     val scrollState = rememberScrollState()
     val userIDState = remember { mutableStateOf("") }
     val accountNumberState = remember { mutableStateOf("") }
     val accountNameState = remember { mutableStateOf("") }
     val mobileNumberState = remember { mutableStateOf("") }
     val nidNoState = remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
     Column(modifier = Modifier.padding(bottom = 20.dp)
         , verticalArrangement =Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
 
@@ -275,8 +282,8 @@ fun UserTextFields(selectedButton: Int){
             .padding(start = 16.dp))
         OutlinedTextField(
             modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp),value =userIDState.value , onValueChange = {userIDState.value = it},
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp),value =userIDState.value , onValueChange = {userIDState.value = it},
             singleLine = true,
             placeholder ={ Text(text = "Enter your user ID")} ,
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -375,12 +382,16 @@ fun UserTextFields(selectedButton: Int){
         Text(text = "NID No", modifier = Modifier
             .align(Alignment.Start)
             .padding(start = 16.dp))
-        OutlinedTextField( modifier = Modifier
-            .fillMaxWidth()
-            .imePadding()
-            .padding(start = 16.dp, end = 16.dp),value =nidNoState.value , onValueChange = {nidNoState.value = it},
-            placeholder ={ Text(text = "Enter your NID No")} ,
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding()
+                .padding(start = 16.dp, end = 16.dp),
+            value = nidNoState.value, onValueChange = { nidNoState.value = it },
+            placeholder = { Text(text = "Enter your NID No") },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF014C8F),
                 unfocusedBorderColor = Color(0x54545454), // Optional: define the unfocused border color
@@ -388,10 +399,11 @@ fun UserTextFields(selectedButton: Int){
                 focusedLabelColor = Color(0xFF014C8F),   // Focused label color
                 unfocusedLabelColor = Color.Gray,
                 containerColor = Color(0xFBFBFBFB),
-            ),)
+            ),
+        )
 
         TermsSection()
-        nextBtn()
+        nextBtn(navController =  navController)
 
 
     }
@@ -437,9 +449,9 @@ fun TermsSection() {
 
 
 @Composable
-fun nextBtn(){
+fun nextBtn(navController: NavHostController){
     Button(
-        onClick = { /* Handle click */ },
+        onClick = { navController.navigate("otp") },
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor =  Color(0xFF014C8F), // Background color
@@ -537,7 +549,11 @@ fun DatePickerText(modifier: Modifier = Modifier) {
                 showDatePickerDialog() // Show DatePickerDialog when the box is clicked
             }
             .background(Color(0xFBFBFBFB), shape = RoundedCornerShape(4.dp)) // Set corner radius
-            .border(1.dp, Color(0x54545454), shape = RoundedCornerShape(4.dp)) // Set border with corner radius
+            .border(
+                1.dp,
+                Color(0x54545454),
+                shape = RoundedCornerShape(4.dp)
+            ) // Set border with corner radius
             .padding(16.dp)
     ) {
         Row(

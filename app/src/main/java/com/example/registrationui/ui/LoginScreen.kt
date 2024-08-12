@@ -85,10 +85,11 @@ fun LoginScreen(navController: NavHostController){
         Image(modifier = Modifier
             .width(300.dp)
             .height(200.dp), painter = painterResource(id = R.drawable.masterpay), contentDescription = "login image")
+
+        Spacer(modifier = Modifier.height(10.dp))
         OutlinedTextField( modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp),value =textState.value , onValueChange = {textState.value = it},
-
             placeholder ={ Text(text = "User ID")} ,
             singleLine = true,
 
@@ -101,14 +102,14 @@ fun LoginScreen(navController: NavHostController){
             ),)
 
         TextButton(modifier = Modifier
-            .align(Alignment.End), onClick = {}, colors = ButtonDefaults.textButtonColors(
+            .align(Alignment.End).padding(end = 5.dp), onClick = {}, colors = ButtonDefaults.textButtonColors(
             contentColor = Color(0xFF014C8F)
         ),){
             Text(text = "Forgot User ID")
         }
         PasswordOutlinedTextField()
         TextButton(modifier = Modifier
-            .align(Alignment.End)
+            .align(Alignment.End).padding(end = 5.dp)
            ,  colors = ButtonDefaults.textButtonColors(
                 contentColor = Color(0xFF014C8F)
             ), onClick = {},){
@@ -120,8 +121,7 @@ fun LoginScreen(navController: NavHostController){
         HorizontalDivider(modifier = Modifier.width(200.dp), thickness = 1.dp)
         SignupSection(navController = navController)
         OutlinedBtn()
-
-
+        Spacer(modifier = Modifier.height(20.dp))
         BottomBar(items = items)
 
 
@@ -170,7 +170,7 @@ fun TwoButtonsInRow() {
     Row(
         modifier = Modifier
             .fillMaxWidth() // Make the Row take the full width of the parent
-            .padding(16.dp), // Optional: Add padding around the Row
+            .padding(start = 16.dp, end = 16.dp), // Optional: Add padding around the Row
         horizontalArrangement = Arrangement.spacedBy(8.dp), // Optional: Space between buttons
         verticalAlignment = Alignment.CenterVertically // Center align buttons vertically
     ) {
@@ -238,7 +238,7 @@ fun OutlinedBtn() {
         OutlinedButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(top = 5.dp, start = 16.dp, end = 16.dp, bottom = 20.dp),
             onClick = { /* Do something */ },
             border = BorderStroke(1.dp, Color(0xFF014C8F)),
             shape = RoundedCornerShape(8.dp),
