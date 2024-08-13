@@ -2,6 +2,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +19,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -52,9 +56,13 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -167,17 +175,29 @@ fun OTPSubmitView() {
                 ConfirmationButton(
                     imageResourceId = R.drawable.fingerprint_otp,
                     isSelected = selectedButton == 1,
-                    onClick = { selectedButton = 1 }
+                    onClick = {
+                        selectedButton = 1
+                        canResendOtp = false
+                        timerSeconds = 60 // Start the timer when this option is selected
+                    }
                 )
                 ConfirmationButton(
                     imageResourceId = R.drawable.sms_otp,
                     isSelected = selectedButton == 2,
-                    onClick = { selectedButton = 2 }
+                    onClick = {
+                        selectedButton = 2
+                        canResendOtp = false
+                        timerSeconds = 60 // Start the timer when this option is selected
+                    }
                 )
                 ConfirmationButton(
                     imageResourceId = R.drawable.email_otp,
                     isSelected = selectedButton == 3,
-                    onClick = { selectedButton = 3 }
+                    onClick = {
+                        selectedButton = 3
+                        canResendOtp = false
+                        timerSeconds = 60 // Start the timer when this option is selected
+                    }
                 )
             }
 
@@ -332,7 +352,7 @@ fun OTPTextField(
         ),
         singleLine = true,
         modifier = Modifier
-            .size(40.dp, 50.dp)
+            .height(50.dp).width(45.dp)
             .background(Color(0xFFF2F2F2), RoundedCornerShape(5.dp))
             .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
             .focusRequester(focusRequester),
