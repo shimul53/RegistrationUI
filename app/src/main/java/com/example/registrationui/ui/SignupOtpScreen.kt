@@ -110,18 +110,17 @@ fun SignupOtpScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .imePadding()
                 .background(Color.White),
             contentAlignment = Alignment.Center // Initially center the content
         ) {
-            OTPSubmitView()
+            OTPSubmitView(navController =navController)
         }
     }
 }
 
 
 @Composable
-fun OTPSubmitView() {
+fun OTPSubmitView(navController: NavHostController) {
     var selectedButton by remember { mutableStateOf<Int?>(null) }
     var otpDigits = remember { mutableStateListOf(TextFieldValue(), TextFieldValue(), TextFieldValue(), TextFieldValue(), TextFieldValue(), TextFieldValue()) }
     var canResendOtp by remember { mutableStateOf(true) }
@@ -151,11 +150,12 @@ fun OTPSubmitView() {
     Box(
         modifier = Modifier
             .fillMaxSize(),
-        contentAlignment = if (selectedButton == null) Alignment.Center else Alignment.TopCenter
+        contentAlignment = if (selectedButton == null || selectedButton == 1) Alignment.Center else Alignment.TopCenter
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -317,7 +317,7 @@ fun OTPSubmitView() {
 
                     Button(
                         onClick = {
-                            // Action for the submit button
+                            navController.navigate("faq")
                         },
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF014C8F)),

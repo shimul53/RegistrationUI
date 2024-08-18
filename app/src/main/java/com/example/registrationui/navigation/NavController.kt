@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.registrationui.OnboardingUI.IntroScreen
+import com.example.registrationui.ui.FAQScreen
 
 
 @Composable
@@ -18,5 +19,6 @@ fun NavController() {
         composable("signup") { SignupScreen(navController) }
         composable("intro") { IntroScreen(navController) }
         composable("otp") { SignupOtpScreen(navController) }
+        composable("faq") { FAQScreen(navController) }
     }
 }
