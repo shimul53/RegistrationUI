@@ -2,6 +2,7 @@ package UI
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +17,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -32,6 +35,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
@@ -43,9 +47,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.VerticalAlignmentLine
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -53,8 +59,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
 import com.example.registrationui.R
+import com.example.registrationui.biomatricAuth.CustomBiometricController
 
 val items = listOf(
     BottomBarItem(
@@ -116,7 +125,7 @@ fun LoginScreen(navController: NavHostController){
             Text(text = "Forgot Password")
         }
 
-        TwoButtonsInRow()
+        TwoButtonsInRow(navController = navController)
         Spacer(modifier = Modifier.height(16.dp))
         HorizontalDivider(modifier = Modifier.width(200.dp), thickness = 1.dp)
         SignupSection(navController = navController)
@@ -166,7 +175,10 @@ fun PasswordOutlinedTextField() {
 
 
 @Composable
-fun TwoButtonsInRow() {
+fun TwoButtonsInRow(navController: NavHostController) {
+    val activity = LocalContext.current as FragmentActivity
+    var biometricMessage by remember { mutableStateOf("") }
+    var showBiometricPrompt by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .fillMaxWidth() // Make the Row take the full width of the parent
@@ -189,7 +201,10 @@ fun TwoButtonsInRow() {
         }
 
         Button(
-            onClick = { /* Handle click */ },
+            onClick = {
+                //showBiometricPrompt = true
+                navController.navigate("ticket")
+                      },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor =  Color(0xFFF8AD3C), // Background color
@@ -204,6 +219,20 @@ fun TwoButtonsInRow() {
                 contentDescription = "Example Icon",
                 modifier = Modifier.size(100.dp)
             )
+            if (showBiometricPrompt) {
+                CustomBiometricController().CustomBiometricPrompt(
+                    title = "Login with fingerprint",
+                    subtitle = "Touch the Fingerprint sensor",
+                    onAuthenticate = {
+                        showBiometricPrompt = false
+                        CustomBiometricController().startBiometricAuthentication(activity, navController = navController,destinationRoute = "otp")
+                    },
+                    onCancel = {
+                        showBiometricPrompt = false
+                        // Handle cancellation
+                    }
+                )
+            }
         }
     }
 }
@@ -316,9 +345,6 @@ fun BottomBar(items: List<BottomBarItem>) {
         }
     }
 }
-
-
-
 
 
 

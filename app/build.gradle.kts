@@ -75,4 +75,6 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-insets:0.28.0")
     implementation ("com.google.accompanist:accompanist-insets-ui:0.28.0")
     implementation ("androidx.compose.foundation:foundation:1.4.0")
+
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
 }

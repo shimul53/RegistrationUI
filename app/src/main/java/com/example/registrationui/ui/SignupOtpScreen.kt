@@ -1,3 +1,5 @@
+import android.widget.Toast
+import androidx.biometric.BiometricPrompt
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,7 +22,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,12 +32,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -54,6 +61,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
@@ -66,10 +74,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
 import com.example.registrationui.R
+import com.example.registrationui.biomatricAuth.CustomBiometricController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -126,6 +138,10 @@ fun OTPSubmitView(navController: NavHostController) {
     var canResendOtp by remember { mutableStateOf(true) }
     var timerSeconds by remember { mutableStateOf(0) } // Timer starts at 0
 
+    val activity = LocalContext.current as FragmentActivity
+    var biometricMessage by remember { mutableStateOf("") }
+    var showBiometricPrompt by remember { mutableStateOf(false) }
+
     val focusRequesters = List(otpDigits.size) { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
@@ -179,8 +195,25 @@ fun OTPSubmitView(navController: NavHostController) {
                         selectedButton = 1
                         canResendOtp = false
                         timerSeconds = 60 // Start the timer when this option is selected
+                        showBiometricPrompt = true
+
+
                     }
                 )
+                if (showBiometricPrompt) {
+                    CustomBiometricController().CustomBiometricPrompt(
+                        title = "Login with fingerprint",
+                        subtitle = "Touch the Fingerprint sensor",
+                        onAuthenticate = {
+                            showBiometricPrompt = false
+                            CustomBiometricController().startBiometricAuthentication(activity, navController = navController, destinationRoute = "login")
+                        },
+                        onCancel = {
+                            showBiometricPrompt = false
+                            // Handle cancellation
+                        }
+                    )
+                }
                 ConfirmationButton(
                     imageResourceId = R.drawable.sms_otp,
                     isSelected = selectedButton == 2,
@@ -352,7 +385,8 @@ fun OTPTextField(
         ),
         singleLine = true,
         modifier = Modifier
-            .height(50.dp).width(45.dp)
+            .height(50.dp)
+            .width(45.dp)
             .background(Color(0xFFF2F2F2), RoundedCornerShape(5.dp))
             .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
             .focusRequester(focusRequester),
@@ -432,6 +466,3 @@ fun OTPTextField(
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
     )
 }
-
-
-
