@@ -17,13 +17,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.IconButton
 import androidx.compose.material.TabRowDefaults.Divider
+import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -65,12 +70,17 @@ fun CenteredTicketCard(
             .fillMaxSize(), // This will fill the entire screen
         contentAlignment = Alignment.Center // This will align the content (TicketCard) in the center
     ) {
-        TicketCard(
-            navController = navController,
-            circleRadius = circleRadius,
-            cornerSize = cornerSize,
-            modifier = modifier
-        )
+        Column (modifier = Modifier
+            .fillMaxHeight()){
+            TicketCard(
+                navController = navController,
+                circleRadius = circleRadius,
+                cornerSize = cornerSize,
+                modifier = modifier
+            )
+            CrossIconButton(onClick = { navController.navigate("transactionStatus")})
+        }
+
     }
 }
 
@@ -83,8 +93,8 @@ fun TicketCard(
 ) {
     Box(
         modifier = modifier
-            .padding(start = 16.dp, end = 16.dp, bottom = 70.dp, top = 70.dp)
-            .fillMaxHeight()
+            .padding(start = 20.dp, end = 20.dp, top = 70.dp)
+
             .fillMaxWidth()
     ) {
         // Ticket Card with custom shape
@@ -93,35 +103,37 @@ fun TicketCard(
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             modifier = Modifier
-                .fillMaxSize()
+
                 .padding(top = 50.dp)
                 .align(Alignment.Center)
         ) {
             Column (modifier = Modifier
-                .fillMaxSize()
+
                 .padding(top = 50.dp)){
                 // Content inside the Card
                 Text(text = "Payment Receipt !",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
+                    fontSize = 22.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.CenterHorizontally))
-                
-                Spacer(modifier = Modifier.height(20.dp))
+
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(text = "Your payment has been successfully done.",
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.CenterHorizontally))
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(start = 10.dp, end = 10.dp))
 
                 Divider(
                     color = Color.Gray.copy(alpha = 0.5f),
                     thickness = 1.dp,
-                    modifier = Modifier.padding(top = 30.dp, start = 20.dp, end = 20.dp, bottom = 30.dp)
+                    modifier = Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
                 )
 
                 Text(text = "Total Transfer",
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.CenterHorizontally))
 
@@ -129,23 +141,24 @@ fun TicketCard(
 
                 Text(text = "BDT 1,000,000",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
+                    fontSize = 22.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.CenterHorizontally))
 
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(text = "REF 000085752257",
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.CenterHorizontally))
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 CardGridView()
 
                 Spacer(modifier = Modifier.height(10.dp))
                 downloadBtn()
+                Spacer(modifier = Modifier.height(10.dp))
             }
 
         }
@@ -256,13 +269,13 @@ fun CardGridView() {
     // Outer Box for padding and alignment
     Box(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(5.dp)
     ) {
         // Column to arrange rows vertically
         Column(
             verticalArrangement = Arrangement.spacedBy(5.dp),
 
-        ) {
+            ) {
             // Row 1
             Row(
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -297,7 +310,9 @@ fun CardGridView() {
 fun CardView(title: String, subtitle: String, modifier: Modifier = Modifier) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = modifier.padding(5.dp).border(width = 1.dp, color = Color(0xfff1f1f1), shape = MaterialTheme.shapes.small)
+        modifier = modifier
+            .padding(5.dp)
+            .border(width = 1.dp, color = Color(0xfff1f1f1), shape = MaterialTheme.shapes.small)
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -305,9 +320,9 @@ fun CardView(title: String, subtitle: String, modifier: Modifier = Modifier) {
                 .padding(10.dp)
                 .fillMaxWidth()
         ) {
-            Text(text = title, color = Color.Gray)
+            Text(text = title, color = Color.Gray, fontSize = 12.sp)
             Spacer(modifier = Modifier.height(5.dp))
-            Text(text = subtitle, color = Color.Black)
+            Text(text = subtitle, color = Color.Black,fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
         }
     }
 }
@@ -340,9 +355,114 @@ fun downloadBtn() {
 
             )
 
-            Text(modifier = Modifier.padding(10.dp), color = Color.Black, text = "Get PDF Receipt", fontSize = 20.sp)
+            Text(modifier = Modifier.padding(1.dp), color = Color.Black, text = "Get PDF Receipt", fontSize = 16.sp)
         }
     }
 
 }
 
+
+@Composable
+fun CloseButton(
+    onClick: () -> Unit,
+    backgroundColor: Color = Color.White,
+    contentColor: Color = Color.Black,
+    elevation: Dp = 4.dp
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp, top = 40.dp)
+    ) {
+        Surface(
+            shape = CircleShape,
+            color = backgroundColor,
+            shadowElevation = elevation,
+            modifier = Modifier.align(Alignment.TopStart)
+        ) {
+            IconButton(onClick = onClick) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "Close",
+                    tint = contentColor
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CrossIconButton(
+    onClick: () -> Unit,
+    backgroundColor: Color = Color.White,
+    contentColor: Color = Color.Black,
+    iconElevation: Dp = 8.dp
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize().padding(10.dp)
+
+    ) {
+        Surface(
+            shape = CircleShape,
+            color = backgroundColor,
+            shadowElevation = iconElevation,
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp)
+        ) {
+            IconButton(onClick = onClick) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "Close",
+                    tint = contentColor
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ElevatedIconButton(
+    onClick: () -> Unit,
+    backgroundColor: Color = Color.White,
+    contentColor: Color = Color.Black,
+    iconElevation: Dp = 8.dp
+) {
+    Surface(
+        shape = CircleShape,
+        color = backgroundColor,
+        shadowElevation = iconElevation,
+        modifier = Modifier.size(48.dp)
+    ) {
+        IconButton(onClick = onClick) {
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = "Close",
+                tint = contentColor
+            )
+        }
+    }
+}
+
+@Composable
+fun RowWithIconAndTextField() {
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 30.dp)
+    ) {
+        ElevatedIconButton(
+            onClick = { /* Handle click */ }
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Text(text = "Transaction Receipt",
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.align(Alignment.CenterVertically))
+
+    }
+}
