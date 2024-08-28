@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -180,18 +181,22 @@ fun TasbeehCountUI(navController: NavHostController, viewModel: TasbeehViewModel
             contentAlignment = Alignment.TopStart
         ) {
             Column(modifier = Modifier.align(Alignment.Center)) {
-                TasbeehCountImg(
-                    painter = painterResource(id = R.drawable.tasbeeh_count_image),
-                    contentDescription = "",
-                    text = viewModel.count.toString()
-                )
-                Column(
+                Column (modifier = Modifier.weight(1f)){
+                    TasbeehCountImg(
+                        painter = painterResource(id = R.drawable.tasbeeh_count_image),
+                        contentDescription = "",
+                        text = viewModel.count.toString(), viewModel = viewModel
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+
+                /*Column(
                     modifier = Modifier
                         .align(Alignment.End)
                         .padding(16.dp)
                 ) {
                     TotalCountText(text = viewModel.totalCount.toString())
-                }
+                }*/
 
                 GradientButtonRow(
                     onCountClick = { viewModel.incrementCount() },
@@ -217,13 +222,14 @@ fun TasbeehCountImg(
     modifier: Modifier = Modifier,
     painter: Painter,
     contentDescription: String,
-    text: String
+    text: String,
+    viewModel: TasbeehViewModel
 ) {
     val digitalFont = FontFamily(
         Font(R.font.ds_digital) // Replace with your font file name
     )
     val shape = RoundedCornerShape(8.dp)
-    val height = 350.dp
+    val height = 300.dp
     Box(
         modifier = modifier
             .height(height)
@@ -240,12 +246,20 @@ fun TasbeehCountImg(
         )
 
         Text(
-            modifier = Modifier.padding(bottom = 100.dp),
+            modifier = Modifier.padding(bottom = 90.dp),
             text = text,
             color = White, fontSize = 30.sp,
             fontFamily = digitalFont,
             letterSpacing = 2.sp
         )
+        Spacer(modifier = Modifier.height(30.dp))
+        Column (modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(bottom = 10.dp, end = 16.dp)){
+            TotalCountText(text = viewModel.totalCount.toString())
+        }
+        
+
     }
 }
 
@@ -322,7 +336,7 @@ fun TotalCountText(
     fontWeight: FontWeight = FontWeight.Bold,
     boxBorderColor: Color = Color(0xFF1c73c2),
     boxCornerRadius: Dp = 8.dp,
-    boxPadding: Dp = 8.dp
+    boxPadding: Dp = 5.dp
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -336,7 +350,7 @@ fun TotalCountText(
                 )
                 .padding(boxPadding)
                 .height(30.dp)
-                .width(50.dp),
+                .width(60.dp),
             contentAlignment = Alignment.Center
         ) {
             // Layered text for the outline effect

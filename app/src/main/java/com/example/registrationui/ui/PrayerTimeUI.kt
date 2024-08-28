@@ -843,7 +843,7 @@ fun CustomSlider(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center, modifier = Modifier.padding(start = 16.dp, end = 16.dp)
     ) {
         Row(
             modifier = modifier.fillMaxWidth(),
