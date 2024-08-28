@@ -78,4 +78,8 @@ dependencies {
     implementation ("androidx.compose.foundation:foundation:1.4.0")
 
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+
+    implementation ("com.google.accompanist:accompanist-pager:0.30.0") // Latest version as of writing
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.30.0") // For indicators
 }
