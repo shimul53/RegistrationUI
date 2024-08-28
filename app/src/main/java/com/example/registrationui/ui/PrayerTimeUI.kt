@@ -76,9 +76,10 @@ import kotlin.math.absoluteValue
 fun PrayerTimeUI(navController: NavHostController) {
     val scope = rememberCoroutineScope()
     val images = listOf(
-        R.drawable.prayer_banner,
-        R.drawable.prayer_banner,
-        R.drawable.prayer_banner,
+        R.drawable.slider1,
+        R.drawable.slider2,
+        R.drawable.slider3,
+        R.drawable.slider4,
         // Add more images here
     )
 
