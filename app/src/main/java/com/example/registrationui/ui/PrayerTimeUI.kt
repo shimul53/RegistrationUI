@@ -1,5 +1,8 @@
 package com.example.registrationui.ui
 
+import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,8 +40,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -63,17 +69,32 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.registrationui.R
+import com.example.registrationui.models.PrayerTimeItemModel
+import com.example.registrationui.models.PrayerTimeItemResponse
+import com.example.registrationui.models.Timings
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.InputStreamReader
+import java.lang.reflect.Member
+import java.text.SimpleDateFormat
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.Date
+import java.util.Locale
 import kotlin.math.absoluteValue
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrayerTimeUI(navController: NavHostController) {
+fun PrayerTimeUI(navController: NavHostController,prayerTimings: Timings) {
     val scope = rememberCoroutineScope()
     val images = listOf(
         R.drawable.slider1,
@@ -82,6 +103,19 @@ fun PrayerTimeUI(navController: NavHostController) {
         R.drawable.slider4,
         // Add more images here
     )
+    val context = LocalContext.current
+    val members = loadDataFromJson(context)
+
+    val currentDate = Date()
+
+    val dayFormatter = SimpleDateFormat("EEEE", Locale.getDefault()) // For day name like "Monday"
+    val dateFormatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()) // For date like "29 October 2023"
+    val timeFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault()) // For time like "05:30 pm"
+
+    val dayText = dayFormatter.format(currentDate) + ", "
+    val dateText = dateFormatter.format(currentDate)
+    val timeText = timeFormatter.format(currentDate)
+
 
     Scaffold(
         containerColor = Color.White,
@@ -123,8 +157,8 @@ fun PrayerTimeUI(navController: NavHostController) {
             Column {
 
                 ImageTextRow( image = painterResource(id = R.drawable.sun_image),
-                    dayText = "Monday,",
-                    dateText = "29 October 2023", timeText = " 05:30pm", nextAzanText ="Next Azan Comes After" , nextAzanTimeText = "00:45:12")
+                    dayText = dayText,
+                    dateText = dateText, timeText = timeText, nextAzanText ="Next Azan Comes After" , nextAzanTimeText = "00:45:12")
 
                 CustomSlider(imageList = images)
 
@@ -137,7 +171,7 @@ fun PrayerTimeUI(navController: NavHostController) {
                         .padding(top = 16.dp, start = 5.dp, end = 5.dp)
                 )*/
 
-                ThreeCardLayout(navController = navController)
+                ThreeCardLayout(navController = navController, members = members,prayerTimings=prayerTimings)
 
 
             }
@@ -160,7 +194,7 @@ fun ImageTextRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(5.dp),
+            .padding(start = 16.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -173,7 +207,7 @@ fun ImageTextRow(
                 painter = image,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(60.dp)
+                    .size(50.dp)
                     .clip(CircleShape)
             )
 
@@ -186,17 +220,16 @@ fun ImageTextRow(
                     modifier = modifier
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
                         text = dayText,
-                        fontSize = 14.sp, fontWeight = FontWeight.SemiBold
+                        fontSize = 12.sp, fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = timeText,
                         color = Color(0xff1a71bf),
-                        fontSize = 14.sp,fontWeight = FontWeight.SemiBold
+                        fontSize = 12.sp,fontWeight = FontWeight.SemiBold
                     )
                 }
 
@@ -205,7 +238,7 @@ fun ImageTextRow(
                 Text(
                     text = dateText,
                     color = Color.Gray,
-                    fontSize = 13.sp
+                    fontSize = 12.sp
                 )
             }
         }
@@ -223,13 +256,13 @@ fun ImageTextRow(
             ) {
                 Text(
                     text = nextAzanText,
-                    fontSize = 14.sp,fontWeight = FontWeight.SemiBold
+                    fontSize = 12.sp,fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Text(
                     text = nextAzanTimeText,
                     color = Color(0xff1a71bf),
-                    fontSize = 13.sp, textAlign = TextAlign.Start, fontWeight = FontWeight.SemiBold
+                    fontSize = 12.sp, textAlign = TextAlign.Start, fontWeight = FontWeight.SemiBold
                 )
             }
 
@@ -240,8 +273,9 @@ fun ImageTextRow(
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ThreeCardLayout(navController: NavHostController) {
+fun ThreeCardLayout(navController: NavHostController,members: List<PrayerTimeItemModel>,prayerTimings: Timings) {
     Column(
         modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 32.dp)
     ) {
@@ -252,87 +286,7 @@ fun ThreeCardLayout(navController: NavHostController) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column (modifier = Modifier.weight(1f)){
-                SixCardItem(navController = navController)
-               /* TasbeehCountCard(
-                    imageRes = R.drawable.tasbeeh,
-                    title = "Tasbeeh",
-                    subtitle = "Counter", onClick = {navController.navigate("tasbeehCount")}
-
-                )*/
-                /*Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 2.dp).weight(1f),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column (modifier = Modifier.weight(1f)){
-                        TasbeehCountCard(
-                            imageRes = R.drawable.tasbeeh,
-                            title = "Tasbeeh",
-                            subtitle = "Counter", onClick = {navController.navigate("tasbeehCount")}
-
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Column (modifier = Modifier.weight(1f)){
-                        PrayerCard(
-                            imageRes = R.drawable.prayer_img,
-                            title = "Namaz Learning",
-                        )
-                    }
-
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 2.dp).weight(1f),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column (modifier = Modifier.weight(1f)){
-                        TasbeehCountCard(
-                            imageRes = R.drawable.tasbeeh,
-                            title = "Tasbeeh",
-                            subtitle = "Counter", onClick = {navController.navigate("tasbeehCount")}
-
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Column (modifier = Modifier.weight(1f)){
-                        PrayerCard(
-                            imageRes = R.drawable.prayer_img,
-                            title = "Namaz Learning",
-                        )
-                    }
-
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 2.dp).weight(1f),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column (modifier = Modifier.weight(1f)){
-                        TasbeehCountCard(
-                            imageRes = R.drawable.tasbeeh,
-                            title = "Tasbeeh",
-                            subtitle = "Counter", onClick = {navController.navigate("tasbeehCount")}
-
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Column (modifier = Modifier.weight(1f)){
-                        PrayerCard(
-                            imageRes = R.drawable.prayer_img,
-                            title = "Namaz Learning",
-                        )
-                    }
-
-                }*/
+                SixCardItem(navController = navController, members = members )
 
 
             }
@@ -341,6 +295,7 @@ fun ThreeCardLayout(navController: NavHostController) {
                 PrayerTimeCard(
                     imageRes = R.drawable.mosque_img,
                     title = "Prayer Time",
+                    prayerTimings = prayerTimings
 
                 )
                 
@@ -400,7 +355,26 @@ fun TasbeehCountCard(imageRes: Int, title: String, subtitle: String) {
 }
 
 @Composable
-fun SixCardItem(navController: NavHostController) {
+fun loadDataFromJson(context: Context): List<PrayerTimeItemModel> {
+    var members by remember { mutableStateOf(emptyList<PrayerTimeItemModel>()) }
+
+    LaunchedEffect(Unit) {
+        val inputStream = context.assets.open("prayerTimeItem.json")
+        val reader = InputStreamReader(inputStream)
+        // Parse the JSON into a MembersResponse object
+        val response = Gson().fromJson<PrayerTimeItemResponse>(reader, PrayerTimeItemResponse::class.java)
+        members = response.members
+        reader.close()
+    }
+
+    return members
+}
+
+@Composable
+fun SixCardItem(
+    navController: NavHostController,
+    members: List<PrayerTimeItemModel>
+) {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -413,216 +387,82 @@ fun SixCardItem(navController: NavHostController) {
         ),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
     ) {
-        Column (modifier = Modifier.weight(1f).padding(10.dp)){
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 2.dp)
-                    .weight(1f),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(
-                    modifier = Modifier.padding(5.dp).clickable (interactionSource = remember { MutableInteractionSource() },
-                        indication = null){ navController.navigate("tasbeehCount") },
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
+        Column(modifier = Modifier.weight(1f).padding(10.dp)) {
+            members.chunked(2).forEach { rowItems ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 2.dp)
+                        .weight(1f),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(Color(0xff40A0F5), Color(0xff085BA6))
-                                )
-                            )
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.tasbeeh),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape)
-                                .padding(5.dp)
-                        )
+                    rowItems.forEach { member ->
+                        CardItem(member = member, navController = navController)
                     }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(text = "Tasbeeh", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                    Text(text = "Counter", fontSize = 10.sp)
-                }
-
-                Column(
-                    modifier = Modifier.padding(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(Color(0xff40A0F5), Color(0xff085BA6))
-                                )
-                            )
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.prayer_img),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape)
-                                .padding(2.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(text = "Duah", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 2.dp)
-                    .weight(1f),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(
-                    modifier = Modifier.padding(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(Color(0xff40A0F5), Color(0xff085BA6))
-                                )
-                            )
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.hadith_img),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape)
-                                .padding(5.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(text = "Hadith", fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold)
-
-                }
-
-                Column(
-                    modifier = Modifier.padding(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(Color(0xff40A0F5), Color(0xff085BA6))
-                                )
-                            )
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.kiblah_finder),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape)
-                                .padding(5.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(text = "Kiblah", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                    Text(text = "Finder", fontSize = 10.sp)
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 2.dp)
-                    .weight(1f),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(
-                    modifier = Modifier.padding(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(Color(0xff40A0F5), Color(0xff085BA6))
-                                )
-                            )
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ramadan_calender),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape)
-                                .padding(5.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(text = "Ramadan", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                    Text(text = "Calendar", fontSize = 10.sp)
-                }
-
-                Column(
-                    modifier = Modifier.padding(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(Color(0xff40A0F5), Color(0xff085BA6))
-                                )
-                            )
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.namaz_learning_img),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape)
-                                .padding(5.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(text = "Namaz", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                    Text(text = "Leaning", fontSize = 10.sp)
                 }
             }
         }
-
-
     }
 }
+
+@Composable
+fun CardItem(member: PrayerTimeItemModel, navController: NavHostController) {
+    Column(
+        modifier = Modifier
+            .padding(5.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                // Navigate based on prayerTimeItem  title or id
+                if (member.title == "Tasbeeh") {
+                    navController.navigate("tasbeehCount")
+                }else if(member.title == "Qibla"){
+                    navController.navigate("qibla")
+                }
+                // Add more navigation logic if needed
+            },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape)
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(Color(0xff40A0F5), Color(0xff085BA6))
+                    )
+                )
+                .align(Alignment.CenterHorizontally)
+        ) {
+            // Assuming that you have a way to map member titles to image resources
+            val imageResource = when (member.title) {
+                "Tasbeeh" -> R.drawable.tasbeeh
+                "Duah" -> R.drawable.prayer_img
+                "Hadith" -> R.drawable.hadith_img
+                "Qibla" -> R.drawable.kiblah_finder
+                "Ramadan" -> R.drawable.ramadan_calender
+                "Namaz" -> R.drawable.namaz_learning_img
+                else -> R.drawable.prayer_img // Fallback image
+            }
+            Image(
+                painter = painterResource(id = imageResource),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape)
+                    .padding(5.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(text = member.title, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+        if (member.subTitle.isNotEmpty()) {
+            Text(text = member.subTitle, fontSize = 10.sp)
+        }
+    }
+}
+
 @Composable
 fun PrayerCard(imageRes: Int, title: String,) {
     ElevatedCard(
@@ -671,8 +511,9 @@ fun PrayerCard(imageRes: Int, title: String,) {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PrayerTimeCard(imageRes: Int, title: String) {
+fun PrayerTimeCard(imageRes: Int, title: String,prayerTimings: Timings) {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -711,7 +552,7 @@ fun PrayerTimeCard(imageRes: Int, title: String) {
                 )
 
             Spacer(modifier = Modifier.height(2.dp))
-            PrayerTimesLayout()
+            PrayerTimesLayout(prayerTimings = prayerTimings)
 
         }
 
@@ -739,7 +580,7 @@ fun GradientText(
 }
 
 
-@Composable
+/*@Composable
 fun PrayerTimesLayout() {
     Column(
         modifier = Modifier
@@ -753,6 +594,54 @@ fun PrayerTimesLayout() {
         PrayerTimeRow("Isha", "9:00pm", isActive = false)
         PrayerTimeRow("Jumu'ah", "1:15pm", isActive = false)
     }
+}*/
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun PrayerTimesLayout(prayerTimings: Timings) {
+    val currentTime = remember { LocalTime.now() }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(2.dp)
+    ) {
+        PrayerTimeRow(
+            prayerName = "Fajr",
+            time = prayerTimings.Fajr,
+            isActive = isWithin30Minutes(currentTime, prayerTimings.Fajr)
+        )
+        PrayerTimeRow(
+            prayerName = "Dhuhr",
+            time = prayerTimings.Dhuhr,
+            isActive = isWithin30Minutes(currentTime, prayerTimings.Dhuhr)
+        )
+        PrayerTimeRow(
+            prayerName = "Asr",
+            time = prayerTimings.Asr,
+            isActive = isWithin30Minutes(currentTime, prayerTimings.Asr)
+        )
+        PrayerTimeRow(
+            prayerName = "Maghrib",
+            time = prayerTimings.Maghrib,
+            isActive = isWithin30Minutes(currentTime, prayerTimings.Maghrib)
+        )
+        PrayerTimeRow(
+            prayerName = "Isha",
+            time = prayerTimings.Isha,
+            isActive = isWithin30Minutes(currentTime, prayerTimings.Isha)
+        )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun isWithin30Minutes(currentTime: LocalTime, prayerTimeString: String): Boolean {
+    // Convert prayer time string (e.g., "05:00") to LocalTime
+    val formatter = DateTimeFormatter.ofPattern("HH:mm")
+    val prayerTime = LocalTime.parse(prayerTimeString, formatter)
+
+    // Check if current time is within 30 minutes before prayer time
+    val timeDifference = ChronoUnit.MINUTES.between(currentTime, prayerTime)
+    return timeDifference in 0..30 // Time is within 30 minutes
 }
 
 @Composable

@@ -1,0 +1,34 @@
+{
+  "members": [
+    {
+      "id": 1,
+      "title": "Tasbeeh",
+      "subTitle": "Counter"
+    },
+    {
+      "id": 2,
+      "title": "Duah",
+      "subTitle": ""
+    },
+    {
+      "id": 3,
+      "title": "Hadith",
+      "subTitle": ""
+    },
+    {
+      "id": 4,
+      "title": "Qibla",
+      "subTitle": "Finder"
+    },
+    {
+      "id": 5,
+      "title": "Ramadan",
+      "subTitle": "Calender"
+    },
+    {
+      "id": 6,
+      "title": "Namaz",
+      "subTitle": "Learning"
+    }
+  ]
+}

@@ -1,7 +1,14 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.google.devtools.ksp)
+    id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.plugin.compose")
+
+
+
 }
+
 
 android {
     namespace = "com.example.registrationui"
@@ -40,14 +47,20 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+
+
 }
+
+
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -82,4 +95,22 @@ dependencies {
 
     implementation ("com.google.accompanist:accompanist-pager:0.30.0") // Latest version as of writing
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.30.0") // For indicators
+    implementation ("com.google.code.gson:gson:2.8.8")
+    implementation(libs.play.services.location)
+    implementation (libs.accompanist.permissions)
+
+    //Dagger Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    //Datastore
+    implementation (libs.androidx.datastore.preferences)
+    implementation (libs.androidx.navigation.compose)
+
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
+
 }
