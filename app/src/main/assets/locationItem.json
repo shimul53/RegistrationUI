@@ -1,0 +1,24 @@
+{
+  "members": [
+    {
+      "id": 1,
+      "title": "Branch"
+    },
+    {
+      "id": 2,
+      "title": "Sub-Branch"
+    },
+    {
+      "id": 3,
+      "title": "Booth"
+    },
+    {
+      "id": 4,
+      "title": "Corporate Office"
+    },
+    {
+      "id": 5,
+      "title": "Agent Banking"
+    }
+  ]
+}
