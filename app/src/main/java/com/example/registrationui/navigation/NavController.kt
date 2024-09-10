@@ -24,6 +24,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.registrationui.OnboardingUI.IntroScreen
 import com.example.registrationui.QiblaFinder.MainViewModel
 import com.example.registrationui.QiblaFinder.QiblaScreen
+import com.example.registrationui.billsPay.BillsPayItem
+import com.example.registrationui.billsPay.BillsPayItemUI
+import com.example.registrationui.billsPay.BillsPayUI
 import com.example.registrationui.location.AgentBankingLocationUI
 import com.example.registrationui.location.BranchLocationUI
 import com.example.registrationui.location.FindMeItemUI
@@ -53,7 +56,7 @@ fun NavController(viewModel: MainViewModel) {
     val prayerTimesState by viewModel.prayerTimes.collectAsState()
     val prayerTimings = prayerTimesState?.timings?.let { Timings(Asr = it.Asr, Dhuhr = it.Dhuhr, Maghrib = it.Maghrib, Fajr = it.Fajr, Isha = it.Isha) }
 
-    NavHost(navController, startDestination = "location") {
+    NavHost(navController, startDestination = "billsPayItem") {
         composable("login") { LoginScreen(navController) }
         composable("signup") { SignupScreen(navController) }
         composable("intro") { IntroScreen(navController) }
@@ -83,12 +86,18 @@ fun NavController(viewModel: MainViewModel) {
         )
         }
 
+       //location
         composable("location") { FindMeItemUI(navController) }
         composable("branchLocation") { BranchLocationUI(navController, title = "Branch") }
         composable("subBranchLocation") { BranchLocationUI(navController, title = "Sub-Branch") }
         composable("boothLocation") { BranchLocationUI(navController, title = "Booth") }
         composable("corporateLocation") { BranchLocationUI(navController, title = "Corporate Office") }
         composable("agentBankLocation") { AgentBankingLocationUI(navController, title = "Agent Banking") }
+
+
+        //billsPay
+        composable("billsPay") { BillsPayUI(navController) }
+        composable("billsPayItem") { BillsPayItemUI(navController) }
 
     }
 }

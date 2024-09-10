@@ -1,0 +1,32 @@
+{
+  "members": [
+    {
+      "id": 1,
+      "title": "Electricity"
+    },
+    {
+      "id": 2,
+      "title": "Gas"
+    },
+    {
+      "id": 3,
+      "title": "Water"
+    },
+    {
+      "id": 4,
+      "title": "Internet"
+    },
+    {
+      "id": 5,
+      "title": "E-Service"
+    },
+    {
+      "id": 6,
+      "title": "Telephone"
+    },
+    {
+      "id": 7,
+      "title": "Education"
+    }
+  ]
+}
