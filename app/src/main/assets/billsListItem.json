@@ -1,0 +1,35 @@
+{
+  "billNameWiseList": [
+    {
+      "id": 1,
+      "title": "Desco Prepaid",
+      "imageResourceId": "R.drawable.desco_bill"
+    },
+    {
+      "id": 2,
+      "title": "Desco Postpaid",
+      "imageResourceId": "R.drawable.desco_bill"
+    },
+    {
+      "id": 3,
+      "title": "DPDC Postpaid",
+      "imageResourceId": "R.drawable.dpdc_bill"
+    },
+    {
+      "id": 4,
+      "title": "Nesco Prepaid",
+      "imageResourceId": "R.drawable.nesco_bill"
+    },
+    {
+      "id": 5,
+      "title": "Nesco Postpaid",
+      "imageResourceId": "R.drawable.nesco_bill"
+    },
+    {
+      "id": 6,
+      "title": "West Zone Postpaid",
+      "imageResourceId": "R.drawable.west_power_bill"
+    }
+
+  ]
+}

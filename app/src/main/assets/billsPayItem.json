@@ -2,31 +2,38 @@
   "members": [
     {
       "id": 1,
-      "title": "Electricity"
+      "title": "Electricity",
+      "imageResourceId": "R.drawable.electricity_bills"
     },
     {
       "id": 2,
-      "title": "Gas"
+      "title": "Gas",
+      "imageResourceId": "R.drawable.gas_bills"
     },
     {
       "id": 3,
-      "title": "Water"
+      "title": "Water",
+      "imageResourceId": "R.drawable.water_bills"
     },
     {
       "id": 4,
-      "title": "Internet"
+      "title": "Internet",
+      "imageResourceId": "R.drawable.internet_bills"
     },
     {
       "id": 5,
-      "title": "E-Service"
+      "title": "E-Service",
+      "imageResourceId": "R.drawable.e_service_bills"
     },
     {
       "id": 6,
-      "title": "Telephone"
+      "title": "Telephone",
+      "imageResourceId": "R.drawable.telephone_bills"
     },
     {
       "id": 7,
-      "title": "Education"
+      "title": "Education",
+      "imageResourceId": "R.drawable.education_bills"
     }
   ]
 }

@@ -49,14 +49,9 @@ import java.util.concurrent.TimeUnit
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavController(viewModel: MainViewModel) {
-
-
     val navController = rememberNavController()
-    val state = viewModel.qiblaState.collectAsState()
-    val prayerTimesState by viewModel.prayerTimes.collectAsState()
-    val prayerTimings = prayerTimesState?.timings?.let { Timings(Asr = it.Asr, Dhuhr = it.Dhuhr, Maghrib = it.Maghrib, Fajr = it.Fajr, Isha = it.Isha) }
 
-    NavHost(navController, startDestination = "billsPayItem") {
+    NavHost(navController, startDestination = "billsPay") {
         composable("login") { LoginScreen(navController) }
         composable("signup") { SignupScreen(navController) }
         composable("intro") { IntroScreen(navController) }
@@ -65,28 +60,29 @@ fun NavController(viewModel: MainViewModel) {
         composable("transactionReceipt") { CenteredTicketCard(navController) }
         composable("transactionStatus") { TransactionStatus(navController) }
         composable("prayerTime") {
+            val prayerTimesState by viewModel.prayerTimes.collectAsState()
+            val prayerTimings = prayerTimesState?.timings?.let { Timings(
+                Asr = it.Asr, Dhuhr = it.Dhuhr, Maghrib = it.Maghrib, Fajr = it.Fajr, Isha = it.Isha
+            )}
             if (prayerTimings != null) {
                 PrayerTimeUI(navController, prayerTimings = prayerTimings)
             }
         }
         composable("tasbeehCount") {
-            // Obtain the TasbeehViewModel
             val tasbeehViewModel: TasbeehViewModel = viewModel(
                 factory = TasbeehViewModelFactory(LocalContext.current)
             )
-            // Pass the ViewModel to the TasbeehCountUI composable
             TasbeehCountUI(navController, tasbeehViewModel)
         }
         composable("emiCalculator") { EMICalculator(navController) }
-        //composable("qibla") { QiblaFinderUI(navController) }
-        composable("qibla") { QiblaScreen(
-            qiblaDirection = state.value.qiblaDirection,
-            currentDirection = state.value.currentDirection,
-            navController = navController
-        )
+        composable("qibla") {
+            val state by viewModel.qiblaState.collectAsState()
+            QiblaScreen(
+                qiblaDirection = state.qiblaDirection,
+                currentDirection = state.currentDirection,
+                navController = navController
+            )
         }
-
-       //location
         composable("location") { FindMeItemUI(navController) }
         composable("branchLocation") { BranchLocationUI(navController, title = "Branch") }
         composable("subBranchLocation") { BranchLocationUI(navController, title = "Sub-Branch") }
@@ -94,10 +90,11 @@ fun NavController(viewModel: MainViewModel) {
         composable("corporateLocation") { BranchLocationUI(navController, title = "Corporate Office") }
         composable("agentBankLocation") { AgentBankingLocationUI(navController, title = "Agent Banking") }
 
-
-        //billsPay
+        // Bills Pay screens
         composable("billsPay") { BillsPayUI(navController) }
-        composable("billsPayItem") { BillsPayItemUI(navController) }
-
+        composable("billsPayItemUI/{selectedTitle}") { backStackEntry ->
+            val selectedTitle = backStackEntry.arguments?.getString("selectedTitle") ?: ""
+            BillsPayItemUI(navController = navController, selectedTitle = selectedTitle)
+        }
     }
 }
