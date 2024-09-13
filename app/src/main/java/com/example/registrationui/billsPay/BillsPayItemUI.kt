@@ -1,5 +1,6 @@
 package com.example.registrationui.billsPay
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.registrationui.R
 import com.example.registrationui.loadDataFromJson.LoadDataFromJson
+import com.example.registrationui.models.BillWiseListItemModel
 import com.example.registrationui.models.BillsPayItemModel
 import kotlinx.coroutines.launch
 
@@ -68,6 +70,7 @@ import kotlinx.coroutines.launch
 fun BillsPayItemUI(navController: NavHostController, selectedTitle: String) {
     val context = LocalContext.current
     val members = LoadDataFromJson().LoadBillsPayItemDataFromJson(context)
+    val member = LoadDataFromJson().loadBillsJson(context)
 
     // Track selected item by title
     val selectedItem = remember { mutableStateOf(selectedTitle) }
@@ -147,9 +150,9 @@ fun BillsPayItemUI(navController: NavHostController, selectedTitle: String) {
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
-                BillsList(members) { bill ->
+                BillsList(bills = member) { bill ->
                     // Handle click here, e.g., navigate or display more details
-                    //println("${bill.title} clicked")
+                    Log.d("BillsPayItemUI", "${bill.title} clicked")
                 }
             }
         }
@@ -309,19 +312,26 @@ fun UtilitySelectionRow(
 
 
 @Composable
-fun BillsList(bills: List<BillsPayItemModel>, onClick: (String) -> Unit) {
+fun BillsList(bills: List<BillWiseListItemModel>, onClick: (BillWiseListItemModel) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 10.dp)
     ) {
         items(bills) { bill ->
-            BillsListCardItem(onClick = { onClick(bill.title) })
+            BillsListCardItem(bill = bill, onClick = { onClick(bill) })
         }
     }
 }
 
 @Composable
-fun BillsListCardItem(onClick: () -> Unit) {
+fun BillsListCardItem(bill: BillWiseListItemModel, onClick: () -> Unit) {
+    val context = LocalContext.current
+    val imageResourceId = context.resources.getIdentifier(
+        bill.imageResourceId.removePrefix("R.drawable."),
+        "drawable",
+        context.packageName
+    )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -354,8 +364,8 @@ fun BillsListCardItem(onClick: () -> Unit) {
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.bill_history),
-                        contentDescription = "Bill History Icon",
+                        painter = painterResource(id = imageResourceId),
+                        contentDescription = bill.title,
                         modifier = Modifier.size(35.dp)
                     )
                 }
@@ -363,7 +373,7 @@ fun BillsListCardItem(onClick: () -> Unit) {
                 Text(
                     modifier = Modifier.padding(1.dp),
                     color = Color.Black,
-                    text = "Bills History",
+                    text = bill.title,
                     fontSize = 16.sp
                 )
             }

@@ -1,11 +1,15 @@
 package com.example.registrationui.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class BillWiseListItemModel(
     val id: Int,
     val title: String,
-    val imageResourceId: Int
+    val imageResourceId: String
 )
 
+@Serializable
 data class BillWiseListItemModelResponse(
-    val members: List<BillWiseListItemModel>
+    val billNameWiseList: List<BillWiseListItemModel>
 )
