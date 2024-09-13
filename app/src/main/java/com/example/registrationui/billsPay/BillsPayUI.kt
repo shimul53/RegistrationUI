@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.registrationui.R
+import com.example.registrationui.loadDataFromJson.LoadDataFromJson
 import com.example.registrationui.location.LocationCardItem
 import com.example.registrationui.models.BillsPayItemModel
 import com.example.registrationui.models.BillsPayItemResponse
@@ -69,7 +70,7 @@ import java.io.InputStreamReader
 fun BillsPayUI(navController: NavHostController) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val members = LoadBillsPayItemDataFromJson(context)
+    val members = LoadDataFromJson().LoadBillsPayItemDataFromJson(context)
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val selectedTitle = navBackStackEntry?.arguments?.getString("selectedTitle") ?: ""
 
@@ -115,7 +116,10 @@ fun BillsPayUI(navController: NavHostController) {
 
 
                 BillsPayItem(navController = navController,members=members)
-                Divider(color = Color(0xfff3f3f6),modifier = Modifier.height(1.dp).width(100.dp).align(Alignment.CenterHorizontally))
+                Divider(color = Color(0xfff3f3f6),modifier = Modifier
+                    .height(1.dp)
+                    .width(100.dp)
+                    .align(Alignment.CenterHorizontally))
                 SavedBillCard(onClick = {})
                 BillsHistoryCard(onClick = {})
 
@@ -132,31 +136,8 @@ fun BillsPayUI(navController: NavHostController) {
 }
 
 
-@Composable
-fun LoadBillsPayItemDataFromJson(context: Context): List<BillsPayItemModel> {
-    var members by remember { mutableStateOf(emptyList<BillsPayItemModel>()) }
 
-    LaunchedEffect(Unit) {
-        val inputStream = context.assets.open("billsPayItem.json")
-        val reader = InputStreamReader(inputStream)
 
-        // Parse the JSON into a BillsPayItemResponse object
-        val response = Gson().fromJson<BillsPayItemResponse>(reader, BillsPayItemResponse::class.java)
-
-        // Resolve image resource names (stored as Strings) to actual resource IDs
-        members = response.members.map { item ->
-            item.copy(
-                imageResourceId = context.resources.getIdentifier(
-                    item.imageResourceId, "drawable", context.packageName
-                ).toString() // Convert resource ID back to String
-            )
-        }
-
-        reader.close()
-    }
-
-    return members
-}
 
 
 @Composable
@@ -328,18 +309,11 @@ fun BillsPayCardItem(
                 .clip(CircleShape)
                 .align(Alignment.CenterHorizontally)
         ) {
-            val imageResource = when (member.title) {
-                "Electricity" -> R.drawable.electricity_bills
-                "Gas" -> R.drawable.gas_bills
-                "Water" -> R.drawable.water_bills
-                "Internet" -> R.drawable.internet_bills
-                "E-Service" -> R.drawable.e_service_bills
-                "Telephone" -> R.drawable.telephone_bills
-                "Education" -> R.drawable.education_bills
-                else -> R.drawable.gas_bills // Fallback image
-            }
+            // Dynamically resolve the image resource from member
+            val imageResourceId = member.imageResourceId.toIntOrNull() ?: R.drawable.gas_bills // Default fallback image
+
             Image(
-                painter = painterResource(id = imageResource),
+                painter = painterResource(id = imageResourceId),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
@@ -350,6 +324,7 @@ fun BillsPayCardItem(
         Text(text = member.title, fontSize = 14.sp, textAlign = TextAlign.Center)
     }
 }
+
 
 
 

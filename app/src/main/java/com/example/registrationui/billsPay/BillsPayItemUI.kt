@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.registrationui.R
+import com.example.registrationui.loadDataFromJson.LoadDataFromJson
 import com.example.registrationui.models.BillsPayItemModel
 import kotlinx.coroutines.launch
 
@@ -66,7 +67,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BillsPayItemUI(navController: NavHostController, selectedTitle: String) {
     val context = LocalContext.current
-    val members = LoadBillsPayItemDataFromJson(context)
+    val members = LoadDataFromJson().LoadBillsPayItemDataFromJson(context)
 
     // Track selected item by title
     val selectedItem = remember { mutableStateOf(selectedTitle) }
@@ -116,10 +117,14 @@ fun BillsPayItemUI(navController: NavHostController, selectedTitle: String) {
                     val selectedMember = members.find { it.title == itemTitle }
 
                     selectedMember?.let {
+                        // Convert the imageResourceId string back to an integer resource ID
+                        val imageResourceId = it.imageResourceId.toInt()
+
+                        // Pass the selected member for dynamic image and text
                         BillPayFirstSectionCard(
                             title = it.title,           // Use the selected item's title
                             subtitle = "Please select your ${it.title} Bill", // Dynamic subtitle
-                            member = it  // Pass the selected member for dynamic image
+                            member = it.copy(imageResourceId = imageResourceId.toString())  // Convert back to string if needed
                         )
                     }
                 }
@@ -156,7 +161,7 @@ fun BillsPayItemUI(navController: NavHostController, selectedTitle: String) {
 fun BillPayFirstSectionCard(
     title: String,
     subtitle: String,
-    member: BillsPayItemModel,  // Ensure we use the full item model for images
+    member: BillsPayItemModel
 ) {
     Row(
         modifier = Modifier
@@ -194,7 +199,7 @@ fun BillPayFirstSectionCard(
                 .height(50.dp)
                 .width(50.dp),
             shape = RoundedCornerShape(8.dp),
-            elevation = 8.dp // Set elevation here
+            elevation = 8.dp
         ) {
             Box(
                 modifier = Modifier
@@ -204,18 +209,10 @@ fun BillPayFirstSectionCard(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                val imageResource = when (member.title) {
-                    "Electricity" -> R.drawable.electricity_bills
-                    "Gas" -> R.drawable.gas_bills
-                    "Water" -> R.drawable.water_bills
-                    "Internet" -> R.drawable.internet_bills
-                    "E-Service" -> R.drawable.e_service_bills
-                    "Telephone" -> R.drawable.telephone_bills
-                    "Education" -> R.drawable.education_bills
-                    else -> R.drawable.gas_bills // Fallback image
-                }
+                // Convert imageResourceId string back to Int and load image
+                val imageResourceId = member.imageResourceId.toIntOrNull() ?: R.drawable.gas_bills // Default image fallback
                 Image(
-                    painter = painterResource(id = imageResource),
+                    painter = painterResource(id = imageResourceId),
                     contentDescription = "Bill Icon",
                     modifier = Modifier.size(35.dp)
                 )
@@ -223,6 +220,7 @@ fun BillPayFirstSectionCard(
         }
     }
 }
+
 
 
 
