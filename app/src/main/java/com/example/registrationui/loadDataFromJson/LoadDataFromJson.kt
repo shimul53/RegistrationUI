@@ -99,9 +99,4 @@ class LoadDataFromJson {
         return billTypesState.value
     }
 
-
-
-    fun getImageResourceByName(context: Context, imageName: String): Int {
-        return context.resources.getIdentifier(imageName, "drawable", context.packageName)
-    }
 }

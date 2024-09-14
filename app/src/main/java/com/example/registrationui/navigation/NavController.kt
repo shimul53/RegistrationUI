@@ -27,6 +27,7 @@ import com.example.registrationui.QiblaFinder.QiblaScreen
 import com.example.registrationui.billsPay.BillsPayItem
 import com.example.registrationui.billsPay.BillsPayItemUI
 import com.example.registrationui.billsPay.BillsPayUI
+import com.example.registrationui.billsPay.BillsPaymentScreen
 import com.example.registrationui.location.AgentBankingLocationUI
 import com.example.registrationui.location.BranchLocationUI
 import com.example.registrationui.location.FindMeItemUI
@@ -95,6 +96,11 @@ fun NavController(viewModel: MainViewModel) {
         composable("billsPayItemUI/{selectedTitle}") { backStackEntry ->
             val selectedTitle = backStackEntry.arguments?.getString("selectedTitle") ?: ""
             BillsPayItemUI(navController = navController, selectedTitle = selectedTitle)
+        }
+
+        composable("billsPaymentScreen/{selectedTitle}") { backStackEntry ->
+            val selectedTitle = backStackEntry.arguments?.getString("selectedTitle") ?: ""
+            BillsPaymentScreen(navController = navController, selectedTitle = selectedTitle)
         }
     }
 }

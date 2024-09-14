@@ -153,6 +153,7 @@ fun BillsPayItemUI(navController: NavHostController, selectedTitle: String) {
                 // Display the filtered list of bills
                 BillsList(bills = filteredBills) { bill ->
                     Log.d("BillsPayItemUI", "${bill.title} clicked")
+                    navController.navigate("billsPaymentScreen/${bill.title}")
                 }
             }
         }
@@ -215,7 +216,7 @@ fun BillPayFirstSectionCard(
                 contentAlignment = Alignment.Center
             ) {
                 // Convert imageResourceId string back to Int and load image
-                val imageResourceId = member.imageResourceId.toIntOrNull() ?: R.drawable.gas_bills // Default image fallback
+                val imageResourceId = member.imageResourceId.toIntOrNull() ?: R.drawable.default_image // Default image fallback
                 Image(
                     painter = painterResource(id = imageResourceId),
                     contentDescription = "Bill Icon",
@@ -330,7 +331,7 @@ fun BillsListCardItem(bill: BillDetail, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 5.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
+            .padding(top = 5.dp, start = 20.dp, end = 20.dp, bottom = 5.dp)
             .clickable(onClick = onClick),
         elevation = 0.dp,
         border = BorderStroke(1.dp, Color(0xFFd7d7d7)),
