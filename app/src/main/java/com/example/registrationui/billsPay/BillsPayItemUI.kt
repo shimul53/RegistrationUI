@@ -60,7 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.registrationui.R
 import com.example.registrationui.loadDataFromJson.LoadDataFromJson
-import com.example.registrationui.models.BillWiseListItemModel
+import com.example.registrationui.models.BillDetail
 import com.example.registrationui.models.BillsPayItemModel
 import kotlinx.coroutines.launch
 
@@ -74,6 +74,12 @@ fun BillsPayItemUI(navController: NavHostController, selectedTitle: String) {
 
     // Track selected item by title
     val selectedItem = remember { mutableStateOf(selectedTitle) }
+
+    // Find the selected bill type directly, no need for remember here
+    val selectedBillType = member.find { it.title == selectedItem.value }
+
+    // Filter the list of bills based on the selected bill type
+    val filteredBills = selectedBillType?.billList ?: emptyList()
 
     Scaffold(
         containerColor = Color.White,
@@ -115,21 +121,15 @@ fun BillsPayItemUI(navController: NavHostController, selectedTitle: String) {
         ) {
             Column {
                 // Dynamically update the selected item
-                selectedItem.value?.let { itemTitle ->
-                    // Find the corresponding member from the list based on the selected title
-                    val selectedMember = members.find { it.title == itemTitle }
+                val selectedMember = members.find { it.title == selectedItem.value }
 
-                    selectedMember?.let {
-                        // Convert the imageResourceId string back to an integer resource ID
-                        val imageResourceId = it.imageResourceId.toInt()
-
-                        // Pass the selected member for dynamic image and text
-                        BillPayFirstSectionCard(
-                            title = it.title,           // Use the selected item's title
-                            subtitle = "Please select your ${it.title} Bill", // Dynamic subtitle
-                            member = it.copy(imageResourceId = imageResourceId.toString())  // Convert back to string if needed
-                        )
-                    }
+                selectedMember?.let {
+                    // Use the integer imageResourceId directly if it is already processed
+                    BillPayFirstSectionCard(
+                        title = it.title,
+                        subtitle = "Please select your ${it.title} Bill", // Dynamic subtitle
+                        member = it // Pass member as it is with integer resource ID
+                    )
                 }
 
                 UtilitySelectionRow(
@@ -150,14 +150,16 @@ fun BillsPayItemUI(navController: NavHostController, selectedTitle: String) {
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
-                BillsList(bills = member) { bill ->
-                    // Handle click here, e.g., navigate or display more details
+                // Display the filtered list of bills
+                BillsList(bills = filteredBills) { bill ->
                     Log.d("BillsPayItemUI", "${bill.title} clicked")
                 }
             }
         }
     }
 }
+
+
 
 
 @Composable
@@ -312,7 +314,7 @@ fun UtilitySelectionRow(
 
 
 @Composable
-fun BillsList(bills: List<BillWiseListItemModel>, onClick: (BillWiseListItemModel) -> Unit) {
+fun BillsList(bills: List<BillDetail>, onClick: (BillDetail) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 10.dp)
@@ -324,14 +326,7 @@ fun BillsList(bills: List<BillWiseListItemModel>, onClick: (BillWiseListItemMode
 }
 
 @Composable
-fun BillsListCardItem(bill: BillWiseListItemModel, onClick: () -> Unit) {
-    val context = LocalContext.current
-    val imageResourceId = context.resources.getIdentifier(
-        bill.imageResourceId.removePrefix("R.drawable."),
-        "drawable",
-        context.packageName
-    )
-
+fun BillsListCardItem(bill: BillDetail, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -364,7 +359,7 @@ fun BillsListCardItem(bill: BillWiseListItemModel, onClick: () -> Unit) {
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id = imageResourceId),
+                        painter = painterResource(id = bill.imageResourceId.toInt()), // Use the mapped resource ID directly
                         contentDescription = bill.title,
                         modifier = Modifier.size(35.dp)
                     )
@@ -386,4 +381,3 @@ fun BillsListCardItem(bill: BillWiseListItemModel, onClick: () -> Unit) {
         }
     }
 }
-
