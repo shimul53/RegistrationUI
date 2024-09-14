@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -194,7 +195,7 @@ fun BillPaymentContent(modifier: Modifier = Modifier,navController: NavHostContr
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp),
             value = billNumberState.value, onValueChange = { billNumberState.value = it },
-            placeholder = { Text(text = "Enter Your Bill Number" )},
+            placeholder = { Text(text = "Enter Your Bill Number", color = Color.Black, fontSize = 14.sp )},
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF014C8F),
@@ -224,7 +225,7 @@ fun BillPaymentContent(modifier: Modifier = Modifier,navController: NavHostContr
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp),
             value = billAmountState.value, onValueChange = { billAmountState.value = it },
-            placeholder = { Text(text = "Enter Bill Amount" )},
+            placeholder = { Text(text = "Enter Bill Amount" , color = Color.Black, fontSize = 14.sp)},
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF014C8F),
@@ -290,9 +291,8 @@ fun AccountDropdown() {
 
     // Surface to hold the dropdown and apply styles
     Surface(
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(4.dp),
         color = Color(0xfffafafa),
-        shadowElevation = 3.dp,
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
             .fillMaxWidth(),
@@ -312,6 +312,7 @@ fun AccountDropdown() {
             ) {
                 // TextField for showing the selected account with trailing icon
                 TextField(
+                    textStyle = TextStyle( fontSize = 14.sp),
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth()
@@ -357,7 +358,7 @@ fun AccountDropdown() {
                             content = {
                                 Text(
                                     account,
-                                    color = Color.Black, // Customize text color
+                                    color = Color.Black,fontSize = 14.sp // Customize text color
                                 )
                             },
                             onClick = {
