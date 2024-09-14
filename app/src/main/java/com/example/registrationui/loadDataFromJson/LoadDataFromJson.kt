@@ -79,7 +79,7 @@ class LoadDataFromJson {
                                     context.packageName
                                 )
                                 billDetail.copy(
-                                    imageResourceId = if (resourceId != 0) resourceId.toString() else R.drawable.water_bills.toString() // Fallback to a default image
+                                    imageResourceId = if (resourceId != 0) resourceId.toString() else R.drawable.default_image.toString() // Fallback to a default image
                                 )
                             }
                         )
