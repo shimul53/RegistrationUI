@@ -55,11 +55,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -179,7 +182,7 @@ fun BillPaymentContent(modifier: Modifier = Modifier,navController: NavHostContr
             )
 
 
-            GradientText(
+            SampleGradientText(
                 text = "Sample",
                 gradient = Brush.linearGradient(
                     colors = listOf(Color(0xff40A0F5), Color(0xff085BA6))
@@ -381,6 +384,24 @@ fun AccountDropdown() {
 
 
 
+@Composable
+fun SampleGradientText(
+    text: String,
+    gradient: Brush,
+    fontSize: TextUnit,
+    fontWeight: FontWeight? = null
+) {
+    Text(
+        text = text, fontWeight = FontWeight.SemiBold,
+        style = TextStyle(
+            fontSize = fontSize,
+            fontWeight = fontWeight,
+            brush = gradient,
+            textDecoration = TextDecoration.Underline
+        ),
+        modifier = Modifier.graphicsLayer(alpha = 0.99f).clickable {  }
+    )
+}
 
 
 

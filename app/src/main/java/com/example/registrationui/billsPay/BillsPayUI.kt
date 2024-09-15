@@ -310,7 +310,7 @@ fun BillsPayCardItem(
                 .align(Alignment.CenterHorizontally)
         ) {
             // Dynamically resolve the image resource from member
-            val imageResourceId = member.imageResourceId.toIntOrNull() ?: R.drawable.gas_bills // Default fallback image
+            val imageResourceId = member.imageResourceId.toIntOrNull() ?: R.drawable.default_image // Default fallback image
 
             Image(
                 painter = painterResource(id = imageResourceId),
