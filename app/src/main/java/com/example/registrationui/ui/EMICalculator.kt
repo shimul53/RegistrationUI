@@ -4,6 +4,7 @@ import UI.DatePickerText
 import UI.TermsSection
 import UI.UserTextFields
 import UI.nextBtn
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,6 +34,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
@@ -44,6 +47,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -51,7 +56,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -361,19 +368,7 @@ fun EMICalculatorTextFields(navController: NavHostController,selectedButton: Int
                 .align(Alignment.Start)
                 .padding(start = 16.dp))
             Spacer(modifier = Modifier.height(5.dp))
-            OutlinedTextField( modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp),value =accountNumberState.value , onValueChange = {accountNumberState.value = it},
-                placeholder ={ Text(text = "Enter Frequency")} ,
-                singleLine = true,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color(0xFF014C8F),
-                    unfocusedBorderColor = Color(0x54545454), // Optional: define the unfocused border color
-                    cursorColor = Color(0xFF014C8F),         // Cursor color
-                    focusedLabelColor = Color(0xFF014C8F),   // Focused label color
-                    unfocusedLabelColor = Color.Gray ,
-                    containerColor = Color(0xFBFBFBFB),
-                ),)
+            FrequencyDropdown()
 
             Spacer(modifier = Modifier.height(15.dp))
         }
@@ -387,6 +382,102 @@ fun EMICalculatorTextFields(navController: NavHostController,selectedButton: Int
     }
 
 
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FrequencyDropdown() {
+    var expanded by remember { mutableStateOf(false) } // Dropdown state
+    var selectedAccount by remember { mutableStateOf("Select Investment Duration") } // Current selection
+
+    val accountOptions = listOf("Account 1", "Account 2", "Account 3") // Sample data
+
+    // Surface to hold the dropdown and apply styles
+    Surface(
+        shape = RoundedCornerShape(4.dp),
+        color = Color(0xfffafafa),
+        modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp)
+            .fillMaxWidth(),
+        border = BorderStroke(1.dp, Color(0xffb5b5b5))
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 3.dp)
+        ) {
+            // ExposedDropdownMenuBox for better dropdown handling
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // TextField for showing the selected account with trailing icon
+                TextField(
+                    textStyle = TextStyle( fontSize = 14.sp),
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                        .background(Color.Transparent),
+                    readOnly = true,
+                    value = selectedAccount, // Display selected account
+                    onValueChange = {},
+                    trailingIcon = {
+                        val icon = R.drawable.baseline_expand_more_24 // Custom icon when dropdown is expanded
+
+
+                        Icon(
+                            painter = painterResource(id = icon),
+                            contentDescription = null,
+                            tint = Color(0xffB5B5B5), // Customize the icon color as needed
+                            modifier = Modifier
+                                .size(32.dp)
+                                .align(Alignment.CenterVertically)
+                                .offset(x = (-7).dp)
+                        )
+                    },
+                    colors = ExposedDropdownMenuDefaults.textFieldColors(
+                        focusedTextColor = Color(0xff565353),
+                        unfocusedTextColor = Color(0xff565353),
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent, // Remove bottom underline
+                        unfocusedIndicatorColor = Color.Transparent // Remove bottom underline
+                    ),
+                )
+
+                // Dropdown menu to show the account options
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xfffafafa))
+                ) {
+                    accountOptions.forEach { account ->
+                        DropdownMenuItem(
+
+                            content = {
+                                Text(
+                                    account,
+                                    color = Color.Black,fontSize = 14.sp // Customize text color
+                                )
+                            },
+                            onClick = {
+                                selectedAccount = account // Update selected account
+                                expanded = false // Close the dropdown
+                            },
+
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+
+                            )
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
