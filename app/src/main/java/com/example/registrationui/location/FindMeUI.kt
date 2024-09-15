@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.registrationui.R
+import com.example.registrationui.loadDataFromJson.LoadDataFromJson
 import com.example.registrationui.models.LocationItemModel
 import com.example.registrationui.models.LocationItemResponse
 import com.example.registrationui.models.PrayerTimeItemModel
@@ -70,7 +71,7 @@ import java.io.InputStreamReader
 fun FindMeItemUI(navController: NavHostController) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val members = loadLocationItemDataFromJson(context)
+    val members = LoadDataFromJson().loadLocationItemDataFromJson(context)
 
 
     Scaffold(
@@ -128,21 +129,7 @@ fun FindMeItemUI(navController: NavHostController) {
 }
 
 
-@Composable
-fun loadLocationItemDataFromJson(context: Context): List<LocationItemModel> {
-    var members by remember { mutableStateOf(emptyList<LocationItemModel>()) }
 
-    LaunchedEffect(Unit) {
-        val inputStream = context.assets.open("locationItem.json")
-        val reader = InputStreamReader(inputStream)
-        // Parse the JSON into a MembersResponse object
-        val response = Gson().fromJson<LocationItemResponse>(reader, LocationItemResponse::class.java)
-        members = response.members
-        reader.close()
-    }
-
-    return members
-}
 
 
 @Composable
@@ -253,18 +240,8 @@ fun LocationCardItem(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) {
-                // Navigation logic can go here
-                if (member.title == "Branch") {
-                    navController.navigate("branchLocation")
-                } else if (member.title == "Sub-Branch") {
-                    navController.navigate("subBranchLocation")
-                } else if (member.title == "Booth") {
-                    navController.navigate("boothLocation")
-                } else if (member.title == "Corporate Office") {
-                    navController.navigate("corporateLocation")
-                } else if (member.title == "Agent Banking") {
-                    navController.navigate("agentBankLocation")
-                }
+                navController.navigate("locationItemUI/${member.title}")
+
             },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -275,16 +252,11 @@ fun LocationCardItem(
                 .clip(CircleShape)
                 .align(Alignment.CenterHorizontally)
         ) {
-            val imageResource = when (member.title) {
-                "Branch" -> R.drawable.branch_location
-                "Sub-Branch" -> R.drawable.sub_branch_location
-                "Booth" -> R.drawable.atm_location
-                "Corporate Office" -> R.drawable.co_office_location
-                "Agent Banking" -> R.drawable.agent_bank_location
-                else -> R.drawable.branch_location // Fallback image
-            }
+
+
+            val imageResourceId = member.imageResourceId.toIntOrNull() ?: R.drawable.default_image // Default fallback image
             Image(
-                painter = painterResource(id = imageResource),
+                painter = painterResource(id = imageResourceId),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()

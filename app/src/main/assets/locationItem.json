@@ -2,23 +2,28 @@
   "members": [
     {
       "id": 1,
-      "title": "Branch"
+      "title": "Branch",
+      "imageResourceId": "R.drawable.branch_location"
     },
     {
       "id": 2,
-      "title": "Sub-Branch"
+      "title": "Sub-Branch",
+      "imageResourceId": "R.drawable.sub_branch_location"
     },
     {
       "id": 3,
-      "title": "Booth"
+      "title": "Booth",
+      "imageResourceId": "R.drawable.atm_location"
     },
     {
       "id": 4,
-      "title": "Corporate Office"
+      "title": "Corporate Office",
+      "imageResourceId": "R.drawable.co_office_location"
     },
     {
       "id": 5,
-      "title": "Agent Banking"
+      "title": "Agent Banking",
+      "imageResourceId": "R.drawable.agent_bank_location"
     }
   ]
 }

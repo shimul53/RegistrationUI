@@ -57,20 +57,20 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BranchLocationUI(navController: NavHostController, title: String) {
+fun LocationListUI(navController: NavHostController, title: String) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
 
     val branches = listOf(
-        BranchData("Mirpur 10 Branch", "House 2, Raod 65, Mirpur 10, Dhaka"),
-        BranchData("Dhanmondi Branch", "House 10, Road 15, Dhanmondi, Dhaka"),
-        BranchData("Gulshan Branch", "House 25, Road 45, Gulshan 1, Dhaka"),
-        BranchData("Banani Branch", "House 12, Raod 34, Banani, Dhaka"),
-        BranchData("Mirpur 10 Branch", "House 2, Raod 65, Mirpur 10, Dhaka"),
-        BranchData("Dhanmondi Branch", "House 10, Road 15, Dhanmondi, Dhaka"),
-        BranchData("Gulshan Branch", "House 25, Road 45, Gulshan 1, Dhaka"),
-        BranchData("Banani Branch", "House 12, Raod 34, Banani, Dhaka")
+        LocationListData("Mirpur 10 Branch", "House 2, Raod 65, Mirpur 10, Dhaka"),
+        LocationListData("Dhanmondi Branch", "House 10, Road 15, Dhanmondi, Dhaka"),
+        LocationListData("Gulshan Branch", "House 25, Road 45, Gulshan 1, Dhaka"),
+        LocationListData("Banani Branch", "House 12, Raod 34, Banani, Dhaka"),
+        LocationListData("Mirpur 10 Branch", "House 2, Raod 65, Mirpur 10, Dhaka"),
+        LocationListData("Dhanmondi Branch", "House 10, Road 15, Dhanmondi, Dhaka"),
+        LocationListData("Gulshan Branch", "House 25, Road 45, Gulshan 1, Dhaka"),
+        LocationListData("Banani Branch", "House 12, Raod 34, Banani, Dhaka")
     )
 
 
@@ -113,7 +113,7 @@ fun BranchLocationUI(navController: NavHostController, title: String) {
             contentAlignment = Alignment.TopStart
         ) {
             Column {
-                BranchCardList(branches)
+                LocationListCardList(branches)
 
             }
 
@@ -124,7 +124,7 @@ fun BranchLocationUI(navController: NavHostController, title: String) {
 }
 
 @Composable
-fun BranchCardList(branches: List<BranchData>) {
+fun LocationListCardList(branches: List<LocationListData>) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -132,13 +132,13 @@ fun BranchCardList(branches: List<BranchData>) {
     ) {
         // Correctly pass a single BranchData to BranchCard
         items(branches) { branch ->
-            BranchCard(branch = branch)  // Pass a single BranchData object
+            LocationListCard(branch = branch)  // Pass a single BranchData object
         }
     }
 }
 
 @Composable
-fun BranchCard(branch: BranchData) {
+fun LocationListCard(branch: LocationListData) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -191,7 +191,7 @@ fun BranchCard(branch: BranchData) {
 }
 
 // Data class for Branch information
-data class BranchData(
+data class LocationListData(
     val name: String,
     val address: String
 )
@@ -202,7 +202,7 @@ data class BranchData(
 fun ActionButton(iconRes: Int, text: String) {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .width(80.dp)
             .height(35.dp)
             .background(
                 brush = Brush.horizontalGradient(

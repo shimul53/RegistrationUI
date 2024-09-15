@@ -14,11 +14,12 @@ import com.example.registrationui.models.BillNameWiseListResponse
 import com.example.registrationui.models.BillType
 import com.example.registrationui.models.BillsPayItemModel
 import com.example.registrationui.models.BillsPayItemResponse
+import com.example.registrationui.models.LocationItemModel
+import com.example.registrationui.models.LocationItemResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+
 import java.io.InputStreamReader
 
 class LoadDataFromJson {
@@ -98,5 +99,38 @@ class LoadDataFromJson {
 
         return billTypesState.value
     }
+
+
+    @Composable
+    fun loadLocationItemDataFromJson(context: Context): List<LocationItemModel> {
+        var members by remember { mutableStateOf(emptyList<LocationItemModel>()) }
+
+        LaunchedEffect(Unit) {
+            // Load the JSON file from assets
+            val inputStream = context.assets.open("locationItem.json")
+            val reader = InputStreamReader(inputStream)
+
+            // Parse the JSON into a BillsPayItemResponse object
+            val response = Gson().fromJson(reader, LocationItemResponse::class.java)
+
+            // Map imageResourceId from JSON string to actual drawable resource ID
+            members = response.members.map { item ->
+                item.copy(
+                    imageResourceId = context.resources.getIdentifier(
+                        item.imageResourceId.removePrefix("R.drawable."), // Remove "R.drawable."
+                        "drawable",
+                        context.packageName
+                    ).toString() // Convert resource ID back to string
+                )
+            }
+
+            reader.close()
+        }
+
+        return members
+    }
+
+
+
 
 }

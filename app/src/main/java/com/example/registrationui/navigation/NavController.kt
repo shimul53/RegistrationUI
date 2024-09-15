@@ -29,9 +29,8 @@ import com.example.registrationui.billsPay.BillsPayItemUI
 import com.example.registrationui.billsPay.BillsPayUI
 import com.example.registrationui.billsPay.BillsPaymentScreen
 import com.example.registrationui.location.AgentBankingLocationUI
-import com.example.registrationui.location.BranchLocationUI
 import com.example.registrationui.location.FindMeItemUI
-import com.example.registrationui.location.loadLocationItemDataFromJson
+import com.example.registrationui.location.LocationListUI
 import com.example.registrationui.models.PrayerTimeItemModel
 import com.example.registrationui.models.Timings
 import com.example.registrationui.ui.EMICalculator
@@ -52,7 +51,7 @@ import java.util.concurrent.TimeUnit
 fun NavController(viewModel: MainViewModel) {
     val navController = rememberNavController()
 
-    NavHost(navController, startDestination = "billsPay") {
+    NavHost(navController, startDestination = "location") {
         composable("login") { LoginScreen(navController) }
         composable("signup") { SignupScreen(navController) }
         composable("intro") { IntroScreen(navController) }
@@ -85,11 +84,16 @@ fun NavController(viewModel: MainViewModel) {
             )
         }
         composable("location") { FindMeItemUI(navController) }
-        composable("branchLocation") { BranchLocationUI(navController, title = "Branch") }
-        composable("subBranchLocation") { BranchLocationUI(navController, title = "Sub-Branch") }
-        composable("boothLocation") { BranchLocationUI(navController, title = "Booth") }
-        composable("corporateLocation") { BranchLocationUI(navController, title = "Corporate Office") }
-        composable("agentBankLocation") { AgentBankingLocationUI(navController, title = "Agent Banking") }
+        composable("locationItemUI/{selectedTitle}") { backStackEntry ->
+            val selectedTitle = backStackEntry.arguments?.getString("selectedTitle") ?: ""
+            if (selectedTitle == "Agent Banking")
+                AgentBankingLocationUI(navController = navController, title = selectedTitle)
+            else{
+                LocationListUI(navController = navController, title = selectedTitle)
+            }
+
+        }
+
 
         // Bills Pay screens
         composable("billsPay") { BillsPayUI(navController) }
