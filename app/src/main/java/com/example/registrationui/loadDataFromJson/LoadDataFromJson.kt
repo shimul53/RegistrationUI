@@ -16,9 +16,12 @@ import com.example.registrationui.models.BillsPayItemModel
 import com.example.registrationui.models.BillsPayItemResponse
 import com.example.registrationui.models.LocationItemModel
 import com.example.registrationui.models.LocationItemResponse
+import com.example.registrationui.models.TransferInfoModel
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 import java.io.InputStreamReader
 
@@ -128,6 +131,23 @@ class LoadDataFromJson {
         }
 
         return members
+    }
+
+    fun loadTransferInfo(context: Context): List<TransferInfoModel> {
+        return try {
+            // Open the JSON file from the assets folder
+            val inputStream = context.assets.open("own.json")
+            val jsonString = inputStream.bufferedReader().use { it.readText() }
+
+            // Define the type for the list of TransferInfoModel
+            val listType = object : TypeToken<List<TransferInfoModel>>() {}.type
+
+            // Parse the JSON string into a list of TransferInfoModel objects
+            Gson().fromJson(jsonString, listType)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            emptyList()
+        }
     }
 
 

@@ -28,6 +28,7 @@ import com.example.registrationui.billsPay.BillsPayItem
 import com.example.registrationui.billsPay.BillsPayItemUI
 import com.example.registrationui.billsPay.BillsPayUI
 import com.example.registrationui.billsPay.BillsPaymentScreen
+import com.example.registrationui.billsPay.OwnBank
 import com.example.registrationui.location.AgentBankingLocationUI
 import com.example.registrationui.location.FindMeItemUI
 import com.example.registrationui.location.LocationListUI
@@ -51,7 +52,7 @@ import java.util.concurrent.TimeUnit
 fun NavController(viewModel: MainViewModel) {
     val navController = rememberNavController()
 
-    NavHost(navController, startDestination = "location") {
+    NavHost(navController, startDestination = "billsPay") {
         composable("login") { LoginScreen(navController) }
         composable("signup") { SignupScreen(navController) }
         composable("intro") { IntroScreen(navController) }
@@ -86,11 +87,12 @@ fun NavController(viewModel: MainViewModel) {
         composable("location") { FindMeItemUI(navController) }
         composable("locationItemUI/{selectedTitle}") { backStackEntry ->
             val selectedTitle = backStackEntry.arguments?.getString("selectedTitle") ?: ""
-            if (selectedTitle == "Agent Banking")
+            LocationListUI(navController = navController, title = selectedTitle)
+            /*if (selectedTitle == "Agent Banking")
                 AgentBankingLocationUI(navController = navController, title = selectedTitle)
             else{
                 LocationListUI(navController = navController, title = selectedTitle)
-            }
+            }*/
 
         }
 
@@ -105,6 +107,9 @@ fun NavController(viewModel: MainViewModel) {
         composable("billsPaymentScreen/{selectedTitle}") { backStackEntry ->
             val selectedTitle = backStackEntry.arguments?.getString("selectedTitle") ?: ""
             BillsPaymentScreen(navController = navController, selectedTitle = selectedTitle)
+        }
+        composable("sourceBeneficiary") {
+            OwnBank(navController)
         }
     }
 }

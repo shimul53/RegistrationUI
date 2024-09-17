@@ -113,7 +113,7 @@ fun LocationListUI(navController: NavHostController, title: String) {
             contentAlignment = Alignment.TopStart
         ) {
             Column {
-                LocationListCardList(branches)
+                LocationListCardList(branches,title=title)
 
             }
 
@@ -124,7 +124,7 @@ fun LocationListUI(navController: NavHostController, title: String) {
 }
 
 @Composable
-fun LocationListCardList(branches: List<LocationListData>) {
+fun LocationListCardList(branches: List<LocationListData>,title:String) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -132,13 +132,13 @@ fun LocationListCardList(branches: List<LocationListData>) {
     ) {
         // Correctly pass a single BranchData to BranchCard
         items(branches) { branch ->
-            LocationListCard(branch = branch)  // Pass a single BranchData object
+            LocationListCard(branch = branch, title = title)  // Pass a single BranchData object
         }
     }
 }
 
 @Composable
-fun LocationListCard(branch: LocationListData) {
+fun LocationListCard(branch: LocationListData,title:String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,24 +168,43 @@ fun LocationListCard(branch: LocationListData) {
             Spacer(modifier = Modifier.padding(top = 20.dp))
 
             // Action Buttons Section
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 5.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly // Distribute buttons evenly
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    ActionButton(iconRes = R.drawable.map_location, text = "Map")
+            if (title=="Agent Banking"){
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 5.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly // Distribute buttons evenly
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        AgentBankActionButton(iconRes = R.drawable.map_location, text = "Map")
+                    }
+
+                    Spacer(modifier = Modifier.width(20.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        AgentBankActionButton(iconRes = R.drawable.call_location, text = "Call")
+                    }
                 }
-                Spacer(modifier = Modifier.width(20.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    ActionButton(iconRes = R.drawable.mail_location, text = "Mail")
-                }
-                Spacer(modifier = Modifier.width(20.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    ActionButton(iconRes = R.drawable.call_location, text = "Call")
+            }else{
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 5.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly // Distribute buttons evenly
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        ActionButton(iconRes = R.drawable.map_location, text = "Map")
+                    }
+                    Spacer(modifier = Modifier.width(20.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        ActionButton(iconRes = R.drawable.mail_location, text = "Mail")
+                    }
+                    Spacer(modifier = Modifier.width(20.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        ActionButton(iconRes = R.drawable.call_location, text = "Call")
+                    }
                 }
             }
+
         }
     }
 }
@@ -272,5 +291,68 @@ fun GradientTextLocation(
             brush = gradient
         ),
         modifier = Modifier.graphicsLayer(alpha = 0.99f)
+
+
     )
+}
+
+
+@Composable
+fun AgentBankActionButton(iconRes: Int, text: String) {
+    Box(
+        modifier = Modifier
+            .width(140.dp)
+            .height(35.dp).padding(start = 25.dp, end = 25.dp)
+            .background(
+                brush = Brush.horizontalGradient(
+                    listOf(Color(0xfff5f8ff), Color(0xfff5f8ff))
+                ),
+                shape = RoundedCornerShape(12.dp) // Slightly round the buttons
+            ),
+
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icon with rounded background
+            Box(
+                modifier = Modifier
+                    .size(25.dp) // Adjust size as necessary
+                    .clip(CircleShape)
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(Color(0xff40A0F5), Color(0xff085BA6))
+                        )
+                    ),
+                contentAlignment = Alignment.Center // Align content (icon) in the center
+            ) {
+                Image(
+                    painter = painterResource(id = iconRes),
+                    contentDescription = text,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(24.dp) // Icon size inside the circle
+                        .padding(5.dp) // Padding inside the circle
+                )
+            }
+
+            Spacer(modifier = Modifier.size(10.dp))
+
+            // Text next to the icon
+            GradientTextLocation(
+                text = text,
+                gradient = Brush.linearGradient(
+                    colors = listOf(Color(0xff40A0F5), Color(0xff085BA6))
+                ),
+                fontSize = 13.sp,
+            )
+        }
+
+    }
+
+
 }

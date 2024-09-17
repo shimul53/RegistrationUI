@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -47,6 +48,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +62,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
@@ -68,13 +72,24 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.registrationui.R
 import com.example.registrationui.loadDataFromJson.LoadDataFromJson
+import com.example.registrationui.models.TransferInfoModel
 import com.example.registrationui.ui.GradientText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BillsPaymentScreen(navController: NavHostController, selectedTitle: String) {
+    var selectedSourceAccount by remember { mutableStateOf<String?>(null) }
+    var selectedAvailableBalance by remember { mutableStateOf<String?>(null) }
 
 
+
+    LaunchedEffect(navController.currentBackStackEntry?.savedStateHandle?.get<TransferInfoModel>("beneficiaryAccount")) {
+        navController.currentBackStackEntry?.savedStateHandle?.get<TransferInfoModel>("beneficiaryAccount")
+            ?.let { json ->
+                selectedSourceAccount = json.toAccountNo
+                selectedAvailableBalance = json.availableBalance
+            }
+    }
 
 
 
@@ -111,7 +126,7 @@ fun BillsPaymentScreen(navController: NavHostController, selectedTitle: String) 
     ) { paddingValues ->
 
             Column {
-                BillPaymentContent(Modifier.padding(paddingValues),navController=navController)
+                BillPaymentContent(Modifier.padding(paddingValues),navController=navController, selectedAvailableBalance = selectedAvailableBalance, selectedSourceAccount = selectedSourceAccount)
             }
 
     }
@@ -120,34 +135,95 @@ fun BillsPaymentScreen(navController: NavHostController, selectedTitle: String) 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BillPaymentContent(modifier: Modifier = Modifier,navController: NavHostController) {
+fun BillPaymentContent(modifier: Modifier = Modifier,navController: NavHostController,selectedSourceAccount:String?,selectedAvailableBalance:String?) {
 
     val billNumberState = remember { mutableStateOf("") }
     val billAmountState = remember { mutableStateOf("") }
+    val phoneNumberState = remember { mutableStateOf("") }
+
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState()) // To make the screen scrollable
     ) {
-        // Source Account Label
-        Text(
-            text = "Source Account",
-            style = MaterialTheme.typography.body1,
-            fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-        )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        //AccountDropdown()
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp)
+        ) {
+            Column {
+                Row {
+                    Text(
+                        text = "Source Account",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                    )
+                }
+                Surface(
+                    shape = RoundedCornerShape(4.dp),
+                    color = Color(0xfffafafa),
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth()
+                        .clickable { navController.navigate("sourceBeneficiary") },
+                    border = BorderStroke(1.dp, Color(0xffb5b5b5))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(14.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = selectedSourceAccount ?: "Select your Account",
+                            fontSize = 16.sp,
+                            color = Color(0xff565353),
+                            modifier = Modifier
+                                .weight(3f)
+                                .align(Alignment.CenterVertically)
+                        )
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_expand_more_24),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(32.dp)
+                                .align(Alignment.CenterVertically),
+                            tint = Color(0xffB5B5B5)
+                        )
+                    }
+                }
+                Row(
+                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Available Balance",
+                        fontSize = 16.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .weight(3f)
+                            .align(Alignment.CenterVertically)
+                    )
+                    Text(
+                        text = selectedAvailableBalance ?: "00,000.00",
+                        fontSize = 16.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .weight(3f)
+                            .align(Alignment.CenterVertically),
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+        }
 
-        // Dropdown to select account
-        var expanded by remember { mutableStateOf(false) }
-        var selectedAccount by remember { mutableStateOf("Select Your Account") }
+        Spacer(modifier = Modifier.height(16.dp))
 
-        AccountDropdown()
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Available Balance
+       /* // Available Balance
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -164,7 +240,7 @@ fun BillPaymentContent(modifier: Modifier = Modifier,navController: NavHostContr
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))*/
 
         // Bill No Field
 
@@ -178,7 +254,7 @@ fun BillPaymentContent(modifier: Modifier = Modifier,navController: NavHostContr
             ) {
             Text(
                 text = "Bill No", textAlign = TextAlign.Start,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.Bold, fontSize = 16.sp
             )
 
 
@@ -187,7 +263,7 @@ fun BillPaymentContent(modifier: Modifier = Modifier,navController: NavHostContr
                 gradient = Brush.linearGradient(
                     colors = listOf(Color(0xff40A0F5), Color(0xff085BA6))
                 ),
-                fontSize = 14.sp
+                fontSize = 16.sp
             )
         }
 
@@ -198,7 +274,7 @@ fun BillPaymentContent(modifier: Modifier = Modifier,navController: NavHostContr
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp),
             value = billNumberState.value, onValueChange = { billNumberState.value = it },
-            placeholder = { Text(text = "Enter Your Bill Number", color = Color.Black, fontSize = 14.sp )},
+            placeholder = { Text(text = "Enter Your Bill Number", color = Color.Black, fontSize = 16.sp )},
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF014C8F),
@@ -218,7 +294,7 @@ fun BillPaymentContent(modifier: Modifier = Modifier,navController: NavHostContr
         Text(
             text = "Amount",
             style = MaterialTheme.typography.body1,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp)
         )
 
@@ -228,7 +304,7 @@ fun BillPaymentContent(modifier: Modifier = Modifier,navController: NavHostContr
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp),
             value = billAmountState.value, onValueChange = { billAmountState.value = it },
-            placeholder = { Text(text = "Enter Bill Amount" , color = Color.Black, fontSize = 14.sp)},
+            placeholder = { Text(text = "Enter Bill Amount" , color = Color.Black, fontSize = 16.sp)},
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF014C8F),
@@ -239,6 +315,41 @@ fun BillPaymentContent(modifier: Modifier = Modifier,navController: NavHostContr
                 containerColor = Color(0xFBFBFBFB),
             ),
         )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Amount Field
+        Text(
+            text = "Phone Number",
+            style = MaterialTheme.typography.body1,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        androidx.compose.material3.OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp),
+            value = phoneNumberState.value,
+            onValueChange = { phoneNumberState.value = it },
+            placeholder = { Text(text = "Enter Phone Number" , color = Color.Black, fontSize = 14.sp)},
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color(0xFF014C8F),
+                unfocusedBorderColor = Color(0x54545454), // Optional: define the unfocused border color
+                cursorColor = Color(0xFF014C8F),         // Cursor color
+                focusedLabelColor = Color(0xFF014C8F),   // Focused label color
+                unfocusedLabelColor = Color.Gray,
+                containerColor = Color(0xFBFBFBFB),
+            ),
+        )
+
+
 
 
 

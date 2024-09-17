@@ -1,0 +1,102 @@
+[
+  {
+    "imageName": "profile_pic_1",
+    "receiverName": "John Doe",
+    "toAccountNo": "1234****5678",
+    "toBranchCode": "001",
+    "transferType": "OwnBank",
+    "toDisplayAccountNo": "A/C 1234****5678",
+    "favorite": true,
+    "availableBalance": "5,000.00"
+  },
+  {
+    "imageName": "profile_pic_2",
+    "receiverName": "Jane Smith",
+    "toAccountNo": "9876****5432",
+    "toBranchCode": "002",
+    "transferType": "OwnBank",
+    "toDisplayAccountNo": "C/D 9876****5432",
+    "favorite": false,
+    "availableBalance": "10,000.00"
+  },
+  {
+    "imageName": "profile_pic_3",
+    "receiverName": "Michael Johnson",
+    "toAccountNo": "5678****1234",
+    "toBranchCode": "003",
+    "transferType": "OwnBank",
+    "toDisplayAccountNo": "A/C 5678****1234",
+    "favorite": true,
+    "availableBalance": "7,500.00"
+  },
+  {
+    "imageName": "profile_pic_4",
+    "receiverName": "Emily Davis",
+    "toAccountNo": "4321****8765",
+    "toBranchCode": "004",
+    "transferType": "OwnBank",
+    "toDisplayAccountNo": "C/D 4321****8765",
+    "favorite": false,
+    "availableBalance": "3,000.00"
+  },
+  {
+    "imageName": "profile_pic_5",
+    "receiverName": "William Brown",
+    "toAccountNo": "8765****4321",
+    "toBranchCode": "005",
+    "transferType": "OwnBank",
+    "toDisplayAccountNo": "A/C 8765****4321",
+    "favorite": true,
+    "availableBalance": "9,000.00"
+  },
+  {
+    "imageName": "profile_pic_6",
+    "receiverName": "Olivia Wilson",
+    "toAccountNo": "3456****7890",
+    "toBranchCode": "006",
+    "transferType": "OwnBank",
+    "toDisplayAccountNo": "C/D 3456****7890",
+    "favorite": false,
+    "availableBalance": "6,500.00"
+  },
+  {
+    "imageName": "profile_pic_7",
+    "receiverName": "James Taylor",
+    "toAccountNo": "7890****1234",
+    "toBranchCode": "007",
+    "transferType": "OwnBank",
+    "toDisplayAccountNo": "A/C 7890****1234",
+    "favorite": true,
+    "availableBalance": "8,200.00"
+  },
+  {
+    "imageName": "profile_pic_8",
+    "receiverName": "Isabella Martinez",
+    "toAccountNo": "2345****6789",
+    "toBranchCode": "008",
+    "transferType": "OwnBank",
+    "toDisplayAccountNo": "C/D 2345****6789",
+    "favorite": false,
+    "availableBalance": "4,800.00"
+  },
+  {
+    "imageName": "profile_pic_9",
+    "receiverName": "Alexander Garcia",
+    "toAccountNo": "6789****0123",
+    "toBranchCode": "009",
+    "transferType": "OwnBank",
+    "toDisplayAccountNo": "A/C 6789****0123",
+    "favorite": true,
+    "availableBalance": "2,900.00"
+  },
+  {
+    "imageName": "profile_pic_10",
+    "receiverName": "Sophia Rodriguez",
+    "toAccountNo": "0123****4567",
+    "toBranchCode": "010",
+    "transferType": "OwnBank",
+    "toDisplayAccountNo": "C/D 0123****4567",
+    "favorite": false,
+    "availableBalance": "11,500.00"
+  }
+]
